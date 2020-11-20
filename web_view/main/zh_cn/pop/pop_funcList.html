@@ -1,0 +1,206 @@
+{data}
+<section>
+    <div class="col-md-12">
+        <table class="formStyle tableList">
+            <tbody>
+                <tr>
+                    <th>名稱：</th>
+                    <td>
+                        <input type="text" name="name" value="{name}">
+                    </td>
+                </tr>
+                <tr>
+                    <th>狀態：</th>
+                    <td>
+                        <label class="radio-blue">
+                            <input type="radio" name="enableType" value="0" checked=""><span>啟用</span></label>
+                        <label class="radio-blue">
+                            <input type="radio" name="enableType" value="1"><span>停用</span></label>
+                        <label class="radio-blue">
+                            <input type="radio" name="enableType" value="2"><span>刪除</span></label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>上層選單：</th>
+                    <td>
+                        <select name="upMenu">
+                            <option value="0">無</option>
+                            <!--   {funGroup}
+                            <option value="{id}">{name}</option>
+                            {/funGroup} -->
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>類型：</th>
+                    <td>
+                        <label class="radio-blue">
+                            <input type="radio" name="classifyType" value="C"><span>類別</span></label>
+                        <label class="radio-blue">
+                            <input type="radio" name="classifyType" value="I"><span>項目</span></label>
+                        <label class="radio-blue">
+                            <input type="radio" name="classifyType" value="P"><span>功能</span></label>
+                    </td>
+                </tr>
+                <tr data-classify="I">
+                    <th>可用功能：</th>
+                    <td>
+                        <div class="label-wrap" style="height: 20px; padding-top: 10px">
+                            <label class="checkbox-blue">
+                                <input type="checkbox" name="feat" value="look">
+                                <span class="txt">查看</span>
+                            </label>
+                            <label class="checkbox-blue">
+                                <input type="checkbox" name="feat" value="addcol">
+                                <span class="txt">新增</span>
+                            </label>
+                            <label class="checkbox-blue">
+                                <input type="checkbox" name="feat" value="editcol">
+                                <span class="txt">修改</span>
+                            </label>
+                            <label class="checkbox-blue">
+                                <input type="checkbox" name="feat" value="delcol">
+                                <span class="txt">刪除</span>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+                <tr data-classify="I">
+                    <th>連結方式：</th>
+                    <td>
+                        <label class="radio-blue">
+                            <input type="radio" name="linkType" value="gopage"><span>程式連結</span></label>
+                        <label class="radio-blue">
+                            <input type="radio" name="linkType" value="treeview"><span>數狀階層</span></label>
+                        <label class="radio-blue">
+                            <input type="radio" name="linkType" value="url"><span>網址連結</span></label>
+                        <label class="radio-blue">
+                            <input type="radio" name="linkType" value="_block"><span>另開視窗</span></label>
+                        <!--  <label class="radio-blue">
+                            <input type="radio" name="linkType" value="javascript"><span>Javascript</span></label> -->
+                    </td>
+                </tr>
+                <tr>
+                    <th>連結代碼：</th>
+                    <td>
+                        <input type="text" size="57" name="linkCode" value="{data_rel}">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="text-center m-t-10 btn-gap">
+            <button type="button" onclick="top.ZgWindowFun.zw.CloseWin(top.$('#ZgWindow .currentWindows').attr('id'), true);" class="btns btns-pink">取消</button>
+            <button type="button" class="btns btns-skyBlue" onclick="_addEditPermFn.addPerm();">送出</button>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+var addEditPermFn = function() {
+    var $this = this;
+    var type = "{type}";
+
+    this.addPerm = function() { //新增修改頁面、功能
+        var data = {
+            "id": "{id}",
+            "name": $('input[name="name"]').val(),
+            "up_id": $('select[name="upMenu"]').val(),
+            "enable": $('input[type="radio"][name="enableType"]:checked').val(),
+            "classify": $('input[type="radio"][name="classifyType"]:checked').val(),
+            "link_type": $('input[type="radio"][name="linkType"]:checked').val(),
+            "data_rel": $('input[name="linkCode"]').val()
+        }
+        $('input[name="feat"]').each(function() {
+            data[$(this).val()] = $(this).is(':checked') ? 1 : 0;
+        });
+        /*checknull(formname,檢查欄位)**/
+        var checkinp = {
+            "name": "請輸入名稱",
+            "data_rel": "請輸入rel"
+        };
+        var checkresult = minejs.checknull('.search-group', checkinp);
+        /******************************/
+        if (type == "info")
+            var URLs = "{burl}main/funclist/add";
+        else
+            var URLs = "{burl}main/funclist/save";
+
+        if (checkresult.status == true) {
+            ajax_get(URLs, data, function() {
+                // loading(true);
+            }).always(function() {
+                // loading(false);
+            }).done(function(rt) {
+                try {
+                    var obj = json_decode(rt)
+                } catch (err) {
+                    console.log("parsing error!");
+                }
+
+                switch (obj.code) {
+                    case 100:
+                        popup.alertSuccess(obj.msg, function() {
+                            var zgID = top.$('#ZgWindow .currentWindows').attr('id');
+                            top.ZgWindowFun.zw.CloseWin(zgID);
+                        });
+                        break;
+                    default:
+                        popup.alertFalid(obj.msg);
+                        break;
+                }
+            });
+        } else {
+            popup.alert(checkresult.data);
+        }
+    };
+    this.genPermUpSel = function() { //取得上層選單
+        var opt = {
+            "lv1Fn": function(permItem) {
+                if (permItem.classify == "C") $('select[name="upMenu"]').append($('<option/>').val(permItem.id).text(permItem.name));
+            },
+            "lv2Fn": function(permItem) {
+                if (permItem.classify == "C") $('select[name="upMenu"]').append($('<option/>').val(permItem.id).text(' └ ' + permItem.name));
+            },
+            "doneFn": function() {
+                $this.defaultInfo();
+            }
+        };
+        ctlNew.getPerm(opt);
+    };
+    this.defaultInfo = function() { //預設值
+        var data = new Object();
+        if (type == "edit") { //修改時
+            $('select[name="upMenu"]').val("{up_id}");
+            $('input[type="radio"][name="classifyType"][value="' + "{classify}" + '"]').click();
+            $('input[type="radio"][name="linkType"][value="' + "{link_type}" + '"]').click();
+            $('input[type="radio"][name="enableType"][value="' + "{enable}" + '"]').click();
+
+            data = {
+                "addcol": "{addcol}",
+                "editcol": "{editcol}",
+                "delcol": "{delcol}",
+                "look": "{look}",
+            };
+
+            for (var key in data) {
+                if (data[key] == "1")
+                    $('input[name="feat"][value="' + key + '"]').click()
+            }
+        }
+    };
+    //更換類型
+    $('input[type="radio"][name="classifyType"]').change(function() {
+        if ($('input[type="radio"][name="classifyType"]:checked').val() == "I") {
+            // $('tr[data-classify="I"]').show();
+        } else {
+            // $('tr[data-classify="I"]').hide();
+        }
+    });
+
+    var init = function() {
+        $this.genPermUpSel();
+    }
+    init();
+};
+var _addEditPermFn = new addEditPermFn();
+</script>
+{/data}

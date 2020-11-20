@@ -1,0 +1,128 @@
+<div class="userList">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li>
+                    <h6 class="title">名稱</h6>
+                    <input type="text" vlaue="" name="cname">
+                </li>
+                <li>
+                    <h6 class="title">狀態</h6>
+                    <select name="status">
+                        <option value="">全部</option>
+                        <option value="1">停用</option>
+                        <option value="0">啟用</option>
+                    </select>
+                </li>
+                <li>
+                    <h6 class="title">分層</h6>
+                    <select name="lvl">
+                        <option value="">全部</option>
+                        <option value="5">超級管理員</option>
+                        <option value="8">高級管理員</option>
+                        <option value="11">管理員</option>
+                        <option value="14">一般使用者</option>
+                    </select>
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+        <div class="btns-group">
+            <button type="button" class="btns btns-blue btns-square userList_Button_add">
+                <i class="icon-circle-plus"></i><span>新增</span>
+            </button>
+        </div>
+    </div>
+    <div class="userList_div_grid">
+        <table id="userList_jqGrid" style="width: 100%;"></table>
+    </div>
+    <!-- <div id="userList_pagered"></div> -->
+</div>
+<script>
+var userList = function() {
+    var $this = this;
+    var jq = "userList";
+    var selector = '#' + jq + '_jqGrid';
+
+    this.trigger = function() {
+        $('.' + jq + '_Button_add').off('click').on('click', function() {
+            ZgWindowFun.GoPage('main/pop/userList/info', 'iframeSimple', {
+                width: 500,
+                height: 450
+            }, '新增會員');
+        });
+
+        $('.userList ul li .Button_search').off('click').on('click', function() {
+            var status = $('.userList select[name="status"]').val();
+            var lvl = $('.userList select[name="lvl"]').val();
+            var cname = $('.userList input[name="cname"]').val();
+
+            var data = {
+                "cname": cname,
+                "status": status,
+                "lvl": lvl
+            };
+
+            $this.statusSel(data);
+
+        });
+    }
+    this.catchData = function() {
+        var URLs = "{burl}main/userlist/list";
+        var data = {};
+        minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+    }
+    this.statusSel = function(data) {
+        var URLs = "{burl}main/userlist/list";
+        var send = {
+            "cname": '',
+            "status": '',
+            "lvl": ''
+        };
+        $.extend(send, data);
+        minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+    }
+    var initGrid = function() {
+        var colNames = ['帳號', '名稱', '層級', '備註', '狀態', '操作選項'],
+            colModel = [{
+                name: 'acc',
+                key: true,
+                hidden: true
+            }, {
+                name: 'cname',
+                align: 'center',
+                width: 70,
+            }, {
+                name: 'lvl_name',
+                align: 'center',
+            }, {
+                name: 'remark',
+            }, {
+                name: 'status',
+                align: 'center',
+                width: 60
+            }, {
+                name: 'act',
+                index: 'act',
+                align: 'center',
+                width: 100
+            }];
+
+        jgrid.create(selector, jq, colNames, colModel);
+    }
+    var init = function() {
+        initGrid();
+        $this.catchData();
+        $('#daterange').daterangepicker();
+    }
+    init();
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new userList();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

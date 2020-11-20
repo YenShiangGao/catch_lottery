@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>{inc_access}</head>
+
+<body class="hold-transition skin-purple-blue sidebar-mini">
+	<div id="content_body">
+		{body}
+    	{footer}
+	</div>
+</body>
+
+</html>
+<script type="text/javascript" src="{furl}assets/js/lottery.js"></script>
+<script type="text/javascript">
+var burl = '{burl}';
+
+var IsLogin = '{IsLogin}';
+
+if (IsLogin === "true") {
+    var URLs = "{burl}main/toview/home/urlcode";
+    var send = {};
+
+    ajax_get(URLs, send, function() {
+        loading(true);
+    }).always(function() {
+        loading(false);
+    }).done(function(rt) {
+    	// console.log(rt);
+        var fun = {};
+        fun["100"] = function(obj) {
+            $('#content_body').html(urldecode(obj.html));
+        }
+        my_decode(rt, fun);
+    });
+} else {
+    var URLs = "{burl}main/toview/login";
+    var send = {};
+
+    ajax_get(URLs, send, function() {
+        loading(true);
+    }).always(function() {
+        loading(false);
+    }).done(function(rt) {
+    	
+    });
+}
+</script>
+<!-- {footer} -->

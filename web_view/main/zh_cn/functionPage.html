@@ -1,0 +1,128 @@
+<style>
+    /* 3D Button */
+    a[class*="btn"] {text-decoration: none;}
+    .btn-3d {
+        margin: 0px 2px;
+        position: relative;
+        display: inline-block;
+        font-size: 14px;
+        padding: 6px 20px;
+        color: black;
+        border-radius: 10px;
+        text-align: center;
+        transition: top .01s linear;
+        text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+    }
+    .btn-3d.cyan:hover   {background-color: #82D1E3;}
+
+    .btn-3d:active {
+        top: 9px;
+    }
+
+    /* 3D button colors */
+    .btn-3d.cyan {
+        background-color: #7fccde;
+        box-shadow: 0 0 0 1px #7fccde inset,
+                    0 0 0 2px rgba(255,255,255,0.15) inset,
+                    0 8px 0 0 rgba(102, 164, 178, .6),
+                    0 6px 0 1px rgba(0,0,0,.4),
+                    0 8px 8px 1px rgba(0,0,0,0.5);
+    }
+    .btn-3d.cyan:active {
+        box-shadow: 0 0 0 1px #7fccde inset,
+                    0 0 0 2px rgba(255,255,255,0.15) inset,
+                    0 0 0 1px rgba(0,0,0,0.4);
+    }
+    .css-input { border-color:#cccccc; font-size:14px; padding:6px; border-width:4px; border-radius:20px; border-style:double;  } 
+    .css-input:focus { outline:none; } 
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+<div class="functionPage">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">遊戲選擇
+                    <select class="game_select"></select>
+                </li>
+                <li class="cls_site">新增日期
+                    <input type="text" name="date"" class="css-input" value="ex.20200311" onfocus="javascript:if(this.value=='ex.20200311')this.value='';">
+                </li>
+                <li class="cls_site">
+                    <a href="#" class="btn-3d cyan" id="submitSearch">新增</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+var functionPage = function() {
+    var $this = this;
+    let gameList;
+
+    this.submitSearch = () => {
+        let gameID = $('select.game_select').val()
+        let date = $('input[name="date"]').val()
+        let URLs = "{burl}/lotteryapi/fun/lib_functionPage/insertPeriods";
+        
+        popup.prompt('新增期數', '<div><li>遊戲名稱：'+$this.gameList[gameID]['name']+'</li><li>新增日期：'+date+'</li></div>', () =>{
+            let data = {
+                'gameID':gameID,
+                'date':date
+            }
+            ajax_get(URLs, data, () => {
+                loading(true);
+            }).always(() => {
+                loading(false);
+            }).done((rt) => {
+                var fun = {};
+                fun["100"] = (obj) => {
+                    let gameName = $this.gameList[obj.data.gameID]['name']
+                    let msg = '傳送網域：' + obj.data.host + '<br>遊戲名稱：' + gameName + '<br>新增日期：' + obj.data.date
+                    popup.alertSuccess(msg, function() {})
+                }
+                fun["403"] = (obj) => {
+                    popup.alertFalid(obj.msg)
+                }
+                my_decode(rt, fun)
+            });
+        }, () =>{ });
+    }
+    var init = () => {
+        $('#daterange').daterangepicker();
+
+        var URLs = "{burl}/lotteryapi/fun/lib_functionPage/gameList";
+        ajax_get(URLs, send, () => {
+            loading(true);
+        }).always(() => {
+            loading(false);
+        }).done((rt) => {
+            var fun = {};
+            fun["100"] = (obj) => {
+                $this.gameList = obj.data
+                let data = obj.data
+                let option
+                for(key in data) {
+                    option += '<option value="'+key+'">['+data[key]['id']+']'+data[key]['name']+'</option>';
+                    
+                }
+                $('select.game_select').append(option)
+            }
+            my_decode(rt, fun);
+        });
+
+        $('[id="submitSearch"]').off('click').on('click', () => {
+            this.submitSearch()
+        });
+    }
+    init();
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new functionPage();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

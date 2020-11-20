@@ -1,0 +1,108 @@
+<div class="gameProxy">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li>
+                    <h6 class="title">狀態</h6>
+                    <select name="enable">
+                        <option value="">全部</option>
+                        <option value="0">啟用</option>
+                        <option value="1">停用</option>
+                    </select>
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+        <div class="btns-group">
+            <button type="button" class="btns btns-blue btns-square gameProxy_Button_add">
+                <i class="icon-circle-plus"></i><span>新增</span>
+            </button>
+        </div>
+    </div>
+    <div class="gameProxy_div_grid">
+        <table id="gameProxy_jqGrid" style="width: 100%;"></table>
+    </div>
+    <!-- <div id="gameProxy_pagered"></div> -->
+</div>
+<script>
+var gameProxy = function() {
+    var $this = this;
+    var jq = "gameProxy";
+    var selector = '#' + jq + '_jqGrid';
+
+    this.trigger = function() {
+        $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+            var enable = $('.gameProxy select[name="enable"]').val();
+            var data = {
+                "enable": enable
+            };
+            $this.statusSel(data);
+        });
+
+        $('.Proxy_Button_add').off('click').on('click', function() {
+            ZgWindowFun.GoPage('main/pop/Proxy/info', 'iframeSimple', {
+                width: 500,
+                height: 450
+            }, '新增');
+        });
+    }
+    this.catchData = function() {
+        var URLs = "{burl}main/proxy/list";
+        var data = {};
+        minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+    }
+    this.statusSel = function(data) {
+        var URLs = "{burl}main/proxy/list";
+        var send = {
+            "enable": ''
+        };
+        $.extend(send, data);
+        minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+    }
+    var initGrid = function() {
+        var colNames = ['編號', '狀態', 'IP', 'PORT', '帳號', '密碼', '操作選項'],
+            colModel = [{
+                name: 'id',
+                key: true,
+                hidden: true
+            }, {
+                name: 'enable',
+                align: 'center',
+                width: 50
+            }, {
+                name: 'IP',
+                // width: 50
+            }, {
+                name: 'port',
+                width: 50
+            }, {
+                name: 'proxy_acc',
+                width: 80
+            }, {
+                name: 'proxy_pwd',
+                width: 80
+            }, {
+                name: 'act',
+                index: 'act',
+                // width: 140
+            }];
+
+        jgrid.create(selector, jq, colNames, colModel);
+    }
+    var init = function() {
+        initGrid();
+        $this.catchData();
+        /*daterangepicker*/
+        $('#daterange').daterangepicker();
+    }
+    init();
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new gameProxy();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

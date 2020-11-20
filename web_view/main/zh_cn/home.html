@@ -1,0 +1,777 @@
+<header id="header" class="main-header">
+    <div class="logo">
+        <div class="logo-mini"><img src="{furl}assets/ctl/images/logo-mini.svg" alt=""></div>
+        <div class="logo-lg"><img src="{furl}assets/ctl/images/logo-lg.svg" alt=""></div>
+    </div>
+    <nav class="navbar navbar-static-top" role="navigation">
+        <a href="javascript:void(0);" class="sidebar-toggle" data-toggle="offcanvas" role="button" title=""><span class="sr-only"></span></a>
+        <time class="times txt-workSans">
+            <div class="time-hour">17:58</div>
+            <div class="time-day">
+                <b>2016/11/18</b><b>星期五（北京时间）</b>
+            </div>
+        </time>
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <!--  <li class="dropdown tasks-menu">
+                    <a href="#" class="dropdown-toggle" title="風控通知">
+                        <i class="icon-shield"></i>
+                        <div id="" class="noticeNum">
+                            <b>9</b>
+                        </div>
+                    </a>
+                    <div class="dropdown-menu list-news">
+                        <ul class="dropdownList" data-cate="menu">
+                            <li>
+                                <article>
+                                    <h6 class="title btn-ctrl"><a href="">風控最新消息標題</a></h6>
+                                    <section class="txt">
+                                        消息內容
+                                    </section>
+                                    <time>2016.3.30</time>
+                                </article>
+                            </li>
+                            <li class="noread" data-menupage="risk.observe_view.list">
+                                <article>
+                                    <h6 class="title btn-ctrl"><a href="">風控最新消息標題風控最新消息標題</a></h6>
+                                    <section class="txt">
+                                        消息內容
+                                    </section>
+                                    <time>2016.3.30</time>
+                                </article>
+                            </li>
+                            <li class="noread" data-menupage="risk.observe_view.list">
+                                <article>
+                                    <h6 class="title btn-ctrl"><a href="">風控最新消息標題</a></h6>
+                                    <section class="txt">
+                                        消息內容
+                                    </section>
+                                    <time>2016.3.30</time>
+                                </article>
+                            </li>
+                        </ul>
+                    </div>
+                </li> -->
+                <li class="dropdown user user-menu">
+                    <a href="javascript:void(0);" class="dropdown-toggle">
+                        <i class="user-img"></i>
+                        <p>
+                            <strong>{gda_cname}</strong>
+                            <span>{gda_lvl_name}</span>
+                        </p>
+                        <b class="icon-arrow-down"></b>
+                    </a>
+                    <nav class="dropdown-menu dropdown-right list-links">
+                        <ul>
+                            <li><a href="javascript:void(0);" class="Button_pwedit">修改密碼</a></li>
+                            <!--  <li>
+                                <a href="javascript:void(0);" class="accordion">首頁設定<i class="icon-arrow-down"></i></a>
+                                <ul class="clearfix">
+                                    <li>
+                                        <label class="radio-blue">
+                                            <input type="radio" name="settingHome" value="dashboard"><span>儀表</span></label>
+                                    </li>
+                                    <li>
+                                        <label class="radio-blue">
+                                            <input type="radio" name="settingHome" value="shortcut"><span>快捷建</span></label>
+                                    </li>
+                                </ul>
+                            </li> -->
+                            <!--  <li><a href="javascript:void(0);" data-url="main/toview/dashbord" data-menuid="home-edit" data-fullpage="#0c1429" onclick="navFun.addObj(this,'儀表板編輯',function(){ $('.dashboard').addClass('dashboard-edited') });">儀表板編輯</a></li> -->
+                        </ul>
+                    </nav>
+                </li>
+                <li>
+                    <a class="Button_logout" title="登出會員">
+                        <i class="icon-logout"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<!-- menu -->
+<nav id="xmenu">
+    <aside class="main-sidebar">
+        <section class="sidebar">
+            <ul class="sidebar-menu">
+                <!-- <li class="active" data-menuauth="dashbord">
+                    <a data-menuid="dashbord" data-url="main/toview/dashbord" data-fullpage="#0c1429">
+                        <i class="icon-home"></i>
+                        <span>首頁</span>
+                    </a>
+                </li> -->
+                <!--   <li class="active" data-menuauth="openresult">
+                    <a data-menuid="openresult" data-url="main/toview/openresult">
+                        <i class="icon-home"></i>
+                        <span>開獎結果</span>
+                    </a>
+                </li> -->
+                <!--  <li class="treeview" data-menuauth="user">
+                    <a href="#" data-menuid="member">
+                        <i class="icon-member"></i>
+                        <span>使用者選單</span>
+                    </a>
+                    <ul class="treeview-menu treeview-second">
+                        <li><a href="#" data-menuid="user-list" data-url="main/toview/user_list"><span>使用者管理</span></a></li>
+                        <li><a href="#" data-menuid="user-lvl" data-url="main/toview/user_lvl"><span>階級管理</span></a></li>
+                    </ul>
+                </li> -->
+                <!--   <li class="treeview" data-menuauth="game">
+                    <a href="#" data-menuid="member">
+                        <i class="icon-member"></i>
+                        <span>遊戲選單</span>
+                    </a>
+                    <ul class="treeview-menu treeview-second">
+                        <li><a href="#" data-menuid="game-list" data-url="main/toview/game_list"><span>遊戲清單</span></a></li>
+                        <li><a href="#" data-menuid="game-url" data-url="main/toview/game_url"><span>網址管理</span></a></li>
+                        <li><a href="#" data-menuid="game-period" data-url="main/toview/game_period"><span>期數管理</span></a></li>
+                        <li><a href="#" data-menuid="game-history" data-url="main/toview/game_history"><span>抓獎紀錄(全)</span></a></li>
+                        <li><a href="#" data-menuid="game-periods" data-url="main/toview/game_periods"><span>抓獎紀錄(高權重)</span></a></li>
+                        <li><a href="#" data-menuid="game-period-error" data-url="main/toview/game_period_error"><span>比對錯誤</span></a></li>
+                        <li><a href="#" data-menuid="game-proxy" data-url="main/toview/game_proxy"><span>proxy設定</span></a></li>
+                        <li><a href="#" data-menuid="game-vac" data-url="main/toview/game_vac"><span>假期設定</span></a></li>
+                    </ul>
+                </li> -->
+                <!--  <li class="treeview" data-menuauth="func">
+                    <a href="#" data-menuid="member">
+                        <i class="icon-member"></i>
+                        <span>功能選單</span>
+                    </a>
+                    <ul class="treeview-menu treeview-second">
+                        <li><a href="#" data-menuid="func-list" data-url="main/toview/func_list"><span>功能選單</span></a></li>
+                        <li><a href="#" data-menuid="func-lvl" data-url="main/toview/func_lvl"><span>功能階級權限</span></a></li>
+                    </ul>
+                </li> -->
+                <li class="treeview" data-menuauth="lvl1">
+                    <!-- <a href="#" data-menuid="member">
+                        <i class="icon-agents"></i>
+                        <span>第一層1</span>
+                    </a>
+                    <ul class="treeview-menu treeview-second">
+                        <li><a href="#" data-menuid="member-gride" data-url="main/toview/gride"><span>Gride表格</span></a></li>
+                        <li><a href="#" data-menuid="member-formui" data-url="main/toview/formui"><span>表單UI樣式</span></a></li>
+                        <li data-menuauth="members.risk">
+                            <a href="#" data-menuid="member-level2">
+                                <span class="pull-right-container">
+											<i class="fa fa-angle-down pull-right"></i>
+										</span>
+                                <span>第二層</span>
+                            </a>
+                            <ul class="treeview-menu treeview-third">
+                                <li><a href="#" data-menuid="member-newpage" data-url="main/toview/newpage" data-fullpage="#ddd"><span>空白新頁面</span></a></li>
+                                <li><a href="#" data-menuid="member-05"><span>第三層</span></a></li>
+                            </ul>
+                        </li>
+                    </ul> -->
+                </li>
+            </ul>
+        </section>
+    </aside>
+    <i class="sidebar-height-light"></i>
+</nav>
+<!-- content -->
+<div class="content-wrapper">
+    <div id="toolbar" class="hidden">
+        <!-- breadcrumb -->
+        <div id="breadcrumb">
+            <ol data-head="當前位置"></ol>
+            <div>
+                <a id="btns-closeTab" class="btns btns-taro btns-min" href="" onclick="navFun.closeTab(this);" data-confirm="是否要關閉其他頁簽">關閉其他頁簽</a>
+                <a id="btns-closeWin" class="btns btns-taro btns-min" href="" onclick="navFun.closeWin(this);" data-confirm="是否要關閉所有視窗">關閉所有視窗</a>
+                <a id="btns-largeWin" class="btns btns-min btns-win" href="" onclick="navFun.largeWin();" title="展開所有視窗"><i class="icon-arrow-right-top"></i></a>
+                <a id="btns-miniWin" class="btns btns-min btns-win" href="" onclick="navFun.miniWin();" title="缩小所有視窗"><i class="icon-arrow-left-down"></i></a>
+            </div>
+        </div>
+        <!-- pagetab -->
+        <div id="pagetab">
+            <nav class="clearfix"></nav>
+        </div>
+    </div>
+    <!-- page -->
+    <div id="xpage">
+        <!--  <div class="filterWrap formStyle">
+            <div class="search-group">
+                <ul>
+                    <li class="cls_site">
+                        <select class="game_select">
+                            <option value="">全部</option>
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="div_grid">
+            <table id="jqGrid" style="width: 100%;"></table>
+        </div>
+        <div id="pagered"></div> -->
+    </div>
+</div>
+<script type="text/javascript">
+/*----- 全域變數宣告 -----*/
+var navFun; //導航與頁籤按鈕
+var currentUnit; //當前單元
+
+
+/*----- 全域function -----*/
+var globalFun = new function() {
+    var $this = this;
+    this.workingFun = []; //已呼叫的function
+    this.currentFun = null; //當前作用中的function
+    this.timerFun = []; //呼叫間歇性function
+    this.resizeFun = []; //呼叫resize function
+}
+
+/*----- AdminLTE初始設定 -----*/
+var AdminLTEOptions = {
+    enableBSToppltip: false //tooltip套件
+};
+
+/*----- 系統時間(北京) -----*/
+function getSystime() {
+    var etime = new Date().getTime();
+    var estDate = new Date(etime);
+    var h = estDate.getHours();
+    var m = estDate.getMinutes();
+    h = (h < 10) ? '0' + h : h;
+    m = (m < 10) ? '0' + m : m;
+    $('.time-hour').html(h + ':' + m);
+    var day_list = ['日', '一', '二', '三', '四', '五', '六'];
+
+    var datestr = '<b>' + estDate.getUTCFullYear() + '/' + (estDate.getUTCMonth() + 1) + '/' + estDate.getUTCDate() + '</b>' + '<b>星期' + day_list[estDate.getDay()] + '（北京时间）</b>';
+    $('.time-day').html(datestr);
+}
+
+/*----- navbar：user-img顯示帳號首字母 -----*/
+function muserImg($element) {
+    var element = $element;
+    var name = $('#header .user-menu strong').text();
+    $('#header .user-img').text(name[0]);
+    var $color = [{
+        'bgcolor': '#3c4871',
+        'color': '#8495c3'
+    }, {
+        'bgcolor': '#2aace4',
+        'color': '#fff'
+    }, {
+        'bgcolor': '#df963f',
+        'color': '#fff'
+    }, {
+        'bgcolor': '#d1a94c',
+        'color': '#fff'
+    }, {
+        'bgcolor': '#82bc67',
+        'color': '#fff'
+    }, {
+        'bgcolor': '#df4989',
+        'color': '#fff'
+    }, {
+        'bgcolor': '#cd3737',
+        'color': '#fff'
+    }, {
+        'bgcolor': '#aaaaaa',
+        'color': '#fff'
+    }, {
+        'bgcolor': '#f0d334',
+        'color': '#fff'
+    }, {
+        'bgcolor': '#34bf9d',
+        'color': '#fff'
+    }];
+    var maxNum = $color.length - 1;
+    var minNum = 0;
+    var random = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
+    $($element).css({
+        background: $color[random].bgcolor,
+        color: $color[random].color
+    });
+}
+
+/*----- navbar：下拉收合功能 -----*/
+function navbarAccordion() {
+    $('.navbar-custom-menu').on('click', '.accordion', function(event) {
+        event.preventDefault();
+        if ($(this).next().length > 0) {
+            $(this).toggleClass('active');
+            $(this).next().slideToggle(500);
+        }
+    });
+}
+
+/*----- xmenu：導航與頁籤按鈕 ------*/
+var navigationFun = function() {
+    var $fun = this;
+    var $menu = $('#xmenu'); //主選單
+    var $tab = $('#pagetab'); //頁籤
+    var $page = $('#xpage'); //內頁框架
+    var $root = $('#breadcrumb > ol'); //麵包削
+    var $openTab = []; //已開啟的頁面
+    var $home = 'home'; //首頁data-menuid
+    var $limitNum = $menu.find('a').length;
+
+    //頁籤層級
+    this.tabIndex = function() {
+        $tab.find('a').not('.acitve').each(function(index, el) {
+            $(this).css({
+                zIndex: $openTab.length - index
+            });
+        });
+        $tab.find('.active').css({
+            zIndex: $openTab.length
+        });
+    }
+
+    //自適應頁籤寬度
+    this.tabWdith = function() {
+        var tabs_w = 0;
+        var wrap_w = $tab.width();
+        $tab.find('a').css({
+            width: ''
+        });
+        $tab.find('a').each(function(index, el) {
+            tabs_w = tabs_w + $(this).innerWidth();
+            if (tabs_w + $tab.find('a[data-tabid=' + currentUnit + ']').innerWidth() > $tab.innerWidth() && !$tab.hasClass('average-wdith')) {
+                $limitNum = $openTab.length - 1;
+            }
+        });
+        if ($openTab.length > $limitNum) {
+            $tab.addClass('average-wdith');
+        } else {
+            $tab.removeClass('average-wdith');
+            $limitNum = $menu.find('a').length;
+        }
+        $fun.tabResize();
+    }
+
+    //麵包屑
+    var breadcrumb;
+    this.breadcrumbPath = function() {
+        clearTimeout(breadcrumb);
+        breadcrumb = setTimeout(function() {
+            $root.find('li').remove();
+            $menu.find('.active').each(function(index, el) {
+                $root.append('<li>' + $(this).find('>a').text().trim() + '</li>');
+            });
+        }, 100);
+    }
+
+    //頁面控制：關閉其他頁籤
+    this.closeTab = function(thisBtn) {
+        event.preventDefault();
+        var $this = (thisBtn instanceof HTMLElement) ? $(thisBtn) : thisBtn;
+        var r = confirm($this.attr('data-confirm'));
+        if (r) {
+            $tab.find('a:not(.active) .btn-close').trigger('click');
+        }
+    }
+
+    //頁面控制：關閉所有彈窗
+    this.closeWin = function(thisBtn) {
+        event.preventDefault();
+        var $this = (thisBtn instanceof HTMLElement) ? $(thisBtn) : thisBtn;
+        var r = confirm($this.attr('data-confirm'));
+        if (r) {
+            top.$('#ZgWindow .ZwClose').trigger('click');
+        }
+    }
+
+    //頁面控制：縮小所有彈窗
+    this.miniWin = function(thisBtn) {
+        event.preventDefault();
+        top.$('#ZgWindow .Windows').each(function(index, el) {
+            if (!$(this).hasClass('small')) {
+                $(this).find('.ToSmall').trigger('click');
+            }
+        });
+    }
+
+    //頁面控制：還原所有彈窗
+    this.largeWin = function(thisBtn) {
+        event.preventDefault();
+        top.$('#ZgWindow .Windows').each(function(index, el) {
+            if ($(this).hasClass('small')) {
+                $(this).find('.ToSmall').trigger('click');
+            }
+        });
+    }
+
+    //頁面控制鈕的顯示與隱藏
+    this.pageControl = function() {
+        $openTab.length >= 2 ? top.$('#btns-closeTab').addClass('show') : top.$('#btns-closeTab').removeClass('show');
+        (top.$('#ZgWindow .Windows').length >= 1) ? top.$('#btns-closeWin, #btns-largeWin, #btns-miniWin').addClass('show'): top.$('#btns-closeWin, #btns-largeWin, #btns-miniWin').removeClass('show');
+    }
+
+    //新增頁籤
+    this.addObj = function(thisBtn, tabName, callback) {
+        var $this = (thisBtn instanceof HTMLElement) ? $(thisBtn) : thisBtn;
+        if ($this[0] === undefined) $this = $($this);
+        var $tabName = $this.is('[data-fullpage]') || !tabName ? false : tabName;
+        var $id = $this.attr('data-menuid');
+        var $url = $this.attr('data-url');
+
+        var $full = $this.attr('data-fullpage');
+
+        if ($url !== undefined && $url !== false) {
+            currentUnit = $id;
+            if ($tabName !== false && $.inArray($id, $openTab) == -1) {
+                $tab.find('nav').append('<a data-tabid="' + $id + '" title="' + $tabName + '"><span>' + $tabName + '</span><i class="btn-close icon-close"></i></a>');
+                $openTab.push($id);
+            }
+            $('section[data-pageid]').each(function(index, el) {
+                var thisId = $(this).attr('data-pageid');
+                if ($openTab.indexOf(thisId) < 0) {
+                    $(this).remove();
+                }
+            });
+
+            if ($page.find('section[data-pageid="' + $id + '"]').length <= 0) {
+                var html = $('<section data-pageid="' + $id + '"></section>');
+                if ($this.is('[data-fullpage]')) html.css({
+                    background: $full
+                }).addClass('fullpage');
+                $page.append(html);
+
+                $.post($url, {}, function(rt) {
+                    $page.find('section[data-pageid="' + $id + '"]').html(rt);
+                    if ($.isFunction(callback)) callback();
+                })
+            }
+            $fun.currentShow($tabName);
+            $fun.pageControl();
+        }
+    }
+
+    //當前顯示
+    var grideRresize;
+    this.currentShow = function($hasTab) {
+        $tab.find('a[data-tabid="' + currentUnit + '"]').addClass('active').siblings('a').removeClass('active');
+        $page.find('section[data-pageid="' + currentUnit + '"]').addClass('active').siblings('section').removeClass('active');
+        $menu.find('li').removeClass('active').find('a[data-menuid="' + currentUnit + '"]').parentsUntil('active');
+        $hasTab !== false ? $('#toolbar').removeClass('hidden') : $('#toolbar').addClass('hidden');
+        $fun.tabWdith();
+        $fun.tabIndex();
+        $fun.breadcrumbPath();
+    }
+
+    //點擊主選單
+    $menu.on('click', 'a', function(event) {
+        event.preventDefault();
+        var $this = $(this);
+        var $txt = $this.text().trim();
+        if ($this.next().length <= 0) {
+            $fun.addObj($this, $txt);
+        }
+        // console.log('已開啟的頁面：',$openTab);
+        // console.log('currentUnit當前的單元名稱=' + currentUnit);
+
+        // 170919 - 更換頁籤時，一起更換當前的function
+        groupFun.currentfun = groupFun.pagefunc[currentUnit];
+        // console.log(groupFun.currentfun);
+
+    });
+
+
+    //點擊頁籤
+    $tab.on('click', 'a', function(event) {
+        event.preventDefault();
+        $menu.find('a[data-menuid="' + $(this).attr('data-tabid') + '"]').trigger('click');
+    });
+
+    //頁籤關閉
+    $tab.on('click', '.btn-close', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var $this = $(this).parent('a');
+        var $id = $this.attr('data-tabid');
+
+        if ($this.hasClass('active')) {
+            if ($this.next().length > 0) {
+                currentUnit = $this.next('a').attr('data-tabid');
+            } else {
+                currentUnit = $this.prev('a').attr('data-tabid');
+            }
+            $menu.find('a[data-menuid="' + currentUnit + '"]').trigger('click');
+        }
+
+        var delthis = $openTab.indexOf($id);
+        $openTab.splice(delthis, 1);
+        $this.remove();
+
+        // 170919 - 移除關掉頁籤的該function
+        groupFun.currentfun = groupFun.pagefunc[$id];
+
+        $page.find('section[data-pageid="' + $id + '"]').remove();
+
+        if ($openTab.length <= 0) {
+            $menu.find('a[data-menuid="' + $home + '"]').trigger('click');
+        }
+
+        $fun.tabWdith();
+        $fun.pageControl();
+
+        // 170919 - 更換頁籤時，一起更換當前的function
+        groupFun.currentfun = groupFun.pagefunc[currentUnit];
+
+    });
+
+    //拖曳頁籤
+    $tab.sortable({
+        axis: 'x',
+        placeholder: 'sortable-placeholder',
+        distance: 10,
+        items: 'a',
+        stop: function() {
+            $fun.tabWdith();
+            $fun.tabIndex();
+        }
+    });
+
+    //頁籤resize
+    this.tabResize = function() {
+        if ($openTab.length > $limitNum) {
+            $tab.find('a').css({
+                width: ($tab.width() - 22 * $openTab.length) / $openTab.length
+            });
+        }
+    }
+};
+
+
+/*----- init：初始化 ------*/
+function init() {
+
+    navFun = new navigationFun();
+
+    $('#xmenu [data-menuid="home"]').trigger('click');
+
+    navbarAccordion();
+
+    muserImg();
+
+    getSystime();
+
+    globalFun.timerFun['systemTime'] = setInterval(function() {
+        getSystime();
+    }, 10 * 1000);
+
+
+    /*呼叫resize function*/
+    globalFun.resizeFun['tabWdith'] = navFun.tabWdith;
+    globalFun.resizeFun['tabResize'] = navFun.tabResize;
+    // console.log(globalFun.resizeFun);
+}
+
+/*----- document reday ------*/
+$(function() {
+    init();
+});
+
+
+/*----- window resize ------*/
+$(window).resize(function() {
+    for (var a in globalFun.resizeFun) {
+        globalFun.resizeFun[a]();
+        // console.log(globalFun.resizeFun[a]);
+    }
+});
+
+// 170919 - 避包主要的存放function
+var groupFun = new function() {
+    var $this = this;
+    this.pagefunc = []; //儲存所有呼叫出來的page的function
+    this.currentfun; //當前運作的function
+}
+
+var home = function() {
+    var pwedit = function(data) {
+        var URLs = "{burl}main/userlist/pwedit";
+        var send = data;
+
+        ajax_get(URLs, send, function() {
+            loading(true);
+        }).always(function() {
+            loading(false);
+        }).done(function(rt) {
+            try {
+                var obj = json_decode(rt)
+            } catch (err) {
+                console.log("parsing error!");
+            }
+
+            switch (obj.code) {
+                case 100:
+                    popup.alertSuccess(obj.msg);
+                    break;
+                default:
+                    popup.alert(obj.msg);
+                    break;
+            }
+        });
+    }
+    var logout = function() {
+        try {
+            var URLs = "{burl}main/tologout";
+            var send = {};
+
+            ajax_get(URLs, send, function() {
+                loading(true);
+            }).always(function() {
+                loading(false);
+            }).done(function(rt) {
+                try {
+                    var obj = json_decode(rt)
+                } catch (err) {
+                    console.log("parsing error!");
+                }
+
+                switch (obj.code) {
+                    case 100:
+                        $('#content_body').html(urldecode(obj.html));
+                        break;
+                    default:
+                        popup.alert(obj.msg);
+                        break;
+                }
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    var trigger = function() {
+        $($('#xmenu ul.sidebar-menu li').find('a[data-menuid="openresult"]')[0]).trigger('click');
+        // $('#xmenu ul.sidebar-menu li').find('a[data-menuid="openresult"]').trigger('click');
+
+        $('.Button_logout').off('click').on('click', function() {
+            logout();
+        });
+
+        $('.Button_pwedit').off('click').on('click', function() {
+        	var userID = "{agent_user_id}";
+        	var LoginID = "{LoginID}";
+
+            var content = '' +
+                '<form action="" class="formName">' +
+                '<div class="form-group">' +
+                '<label>舊密碼</label>' +
+                '<input type="password" placeholder="舊密碼" class="name form-control" name="pwd"　required />' +
+                '<label>新密碼</label>' +
+                '<input type="password" placeholder="新密碼" class="name form-control" name="pwdNew"　required />' +
+                '<label>再次輸入新密碼</label>' +
+                '<input type="password" placeholder="再次輸入新密碼" class="name form-control" name="pwdNeww"　required />' +
+                '</div>' +
+                '</form>';
+            popup.prompt('修改密碼', content, function() {
+
+                var checkinp = {
+                    "pwd": "請輸入舊密碼",
+                    "pwdNew": "請輸入新密碼",
+                    "pwdNeww": "請輸入新密碼",
+                };
+                var checkresult = minejs.checknull('.jconfirm-content', checkinp);
+
+                if (checkresult.status == true) {
+                    var send = {
+                        "pwd": '',
+                        "pwdNew": '',
+                        "pwdNeww": ''
+                    };
+                    $.extend(send, checkresult.data);
+
+                    data = {
+                        "pwd": send.pwd,
+                        "pwdNew": send.pwdNew,
+                        "pwdNeww": send.pwdNeww,
+                        "acc": userID,
+                        "LoginID": LoginID
+                    };
+                    pwedit(data);
+                } else {
+                    popup.alert(checkresult);
+                    return false;
+                }
+
+            }, function() {}, {
+                "icon": "fa fa-pencil-square-o"
+            });
+        });
+    }
+    var init = function() {
+        var _this = this;
+        var gda_lvl_id = "{gda_lvl_id}";
+
+        var URLs = "{burl}main/funclist/homefun";
+        var send = {
+            "lvl_id": gda_lvl_id
+        };
+
+        ajax_get(URLs, send, function() {}).always(function() {}).done(function(rt) {
+            try {
+                var obj = json_decode(rt);
+            } catch (err) {
+                console.log("parsing error!");
+            }
+
+            switch (obj.code) {
+                case 100:
+                    $('section ul.sidebar-menu').html('');
+                    for (var key in obj.data) {
+                        var data_rel = obj["data"][key]["data_rel"];
+                        var pageType = data_rel.split('/')[2];
+
+                        var name = obj["data"][key]["name"];
+                        var icon = obj["data"][key]["icon"];
+
+                        switch (obj.data[key]["link_type"]) {
+                            case "gopage":
+                                var li = $('' +
+                                    '<li data-funID="' + key + '" data-menuauth="' + pageType + '">' +
+                                    '<a data-menuid="' + pageType + '" data-url="' + data_rel + '" data-fullpage="#0c1429">' +
+                                    '<i class="' + icon + '"></i>' +
+                                    '<span>' + name + '</span>' +
+                                    '</a>' +
+                                    '</li>');
+                                $('section ul.sidebar-menu').append(li);
+                                break;
+                            case "treeview":
+                                var liOut = $('<li data-funID="' + key + '" data-menuauth="' + pageType + '" class="treeview"></li>');
+                                var ahref = $('' +
+                                    '<a href = "#" data-menuid = "' + pageType + '">' +
+                                    '<i class = "' + icon + '"> </i>' +
+                                    '<span >' + name + '</span>' +
+                                    '</a>' +
+                                    '');
+                                var ul = $('<ul class = "treeview-menu treeview-second"></ul>');
+
+
+                                for (var key2 in obj.data[key].sub) {
+                                	var pageType2 = obj.data[key].sub[key2]["data_rel"].split('/')[2];
+                                    var li = $('' +
+                                        '<li data-funID="' + key2 + '">' +
+                                        '<a href = "#" data-menuid = "' + pageType2 + '" data-url = "' + obj.data[key].sub[key2]["data_rel"] + '" >' +
+                                        '<span>' + obj.data[key].sub[key2]["name"] + '</span>' +
+                                        '</a>' +
+                                        '</li>' +
+                                        '');
+                                    ul.append(li);
+                                }
+
+                                liOut.append(ahref).append(ul);
+                                $('section ul.sidebar-menu').append(liOut);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    trigger();
+                    break;
+                default:
+                    popup.alert(obj.msg);
+                    break;
+            }
+        });
+    }
+    init();
+}
+
+var _home = new home();
+</script>

@@ -1,0 +1,236 @@
+<div class="gamePeriodError">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">遊戲選擇
+                    <select class="game_select">
+                        {gameGroup}
+                        <option value="{id}">[{id}]{name}</option>
+                        {/gameGroup}
+                    </select>
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="gamePeriodError_div_grid">
+        <table id="gamePeriodError_jqGrid" style="width: 100%;"></table>
+        <div id="gamePeriodError_pagered" class="pageWrap"></div>
+    </div>
+</div>
+<script>
+var gamePeriodError = function() {
+        var $this = this;
+        var jq = "gamePeriodError";
+        var selector = '#' + jq + '_jqGrid';
+        var mydata = null;
+        var mySubgrids = null;
+        var hnData = [];
+
+        this.initGrid = function() {
+            var colNames = ['編號', '遊戲名稱', '期數', '開獎號碼', '寫入時間'],
+                colModel = [{
+                    name: 'lottery_id',
+                    key: true,
+                    hidden: true
+                }, {
+                    name: 'cname',
+                    align: 'center',
+                    width:50,
+                    formatter: function(cv, opt, obj) {
+                        if (obj.ename == 'hn') {
+                            let str = obj.period_str.split('_');
+                            if (hnData[str[1] - 1] == undefined )
+                                var city = '';
+                            else
+                                var city = hnData[str[1] - 1]['city_en'] + '(' + hnData[str[1] - 1]['city_ch'] + ')';
+                            return city;
+
+                        } else {
+                            return obj.cname;
+                        }
+                    }
+                }, {
+                    name: 'period_str',
+                    align: 'center',
+                    width:50,
+                }, {
+                    name: 'lottery',
+                    align: 'center',
+                    formatter: function(cv, opt, obj) {
+                        if (obj.ename == 'hn') {
+                            if (obj.lottery != '') {
+                                var lottery = JSON.parse(obj.lottery);
+                                let table = $('<table style="align: center;"></table>');
+                                for (let key in lottery) {
+                                    let tr = $('<tr />');
+                                    let td = $('<td style="text-align: center;">' + key + '</td><td style="text-align: center;">' + lottery[key] + '</td>');
+                                    tr.append(td);
+                                    table.append(tr);
+                                }
+                                return table.prop('outerHTML');
+                            } else {
+                                return '';
+                            }
+                        } else {
+                            return obj.lottery;
+                        }
+                    }
+                }, {
+                    name: 'nowtime',
+                    align: 'center',
+                    width:50,
+                }];
+
+            jgrid.create(selector, jq, colNames, colModel, null, {
+                sortname: 'nowtime',
+                sortorder: 'desc',
+                subGrid: true,
+                subGridRowExpanded: $this.subGridRowExpanded,
+                rowNum:15
+            });
+        }
+        this.catchData = function() {
+            var _this = this;
+            var URLs = "{burl}main/gameHistory/error";
+            var send = {
+                "gameID":$('.gamePeriodError select.game_select').val(),
+                "menuID": $('nav#xmenu ul.sidebar-menu li.active').data('funid'),
+                "funID": $('nav#xmenu ul.sidebar-menu li li.active').data('funid')
+            };
+
+            ajax_get(URLs, send, function(rt) {}).always(function() {}).done(function(rt) {
+                try {
+                    var obj = json_decode(rt);
+                } catch (err) {
+                    console.log("parsing error!");
+                }
+
+                switch (obj.code) {
+                    case 100:
+                        mydata = new Array();
+                        mySubgrids = new Object();
+                        for (var i = 0; i < obj["data"].length; i++) {
+                            mydata.push(obj["data"][i]);
+                            mySubgrids[obj["data"][i]["lottery_id"]] = obj["data"][i]["history"];
+                        }
+
+                        jgrid.clearCurrent();
+                        jgrid.update(selector, jq, mydata);
+                        break;
+                    default:
+                        popup.alert(obj.msg);
+                        break;
+                }
+
+                $this.trigger();
+            });
+        }
+        this.subGridRowExpanded = function(subgridDivId, rowId) {
+            var subgridTableId = subgridDivId + "_t";
+            $("#" + subgridDivId).html("<table id='" + subgridTableId + "'></table>");
+            $("#" + subgridTableId).jqGrid({
+                datatype: 'local',
+                data: mySubgrids[rowId],
+                colNames: ['ID', '期數', '開獎號碼', '來源'],
+                colModel: [{
+                    name: 'id',
+                    align: 'center'
+                }, {
+                    name: 'period_str',
+                    align: 'center'
+                }, {
+                    name: 'lottery',
+                    align: 'center'
+                }, {
+                    name: 'url_name',
+                    align: 'center',
+                    formatter: function(cv, opt, obj) {
+                        if (obj.url_name == null)
+                            return '官網'
+                        else 
+                            return obj.url_name
+                    }
+                }],
+                gridview: true,
+                rownumbers: true,
+                autoencode: true,
+                sortname: 'col1',
+                sortorder: 'desc',
+                height: '100%',
+            });
+        }
+        var statusSel = function(data) {
+            var URLs = "{burl}main/gameHistory/error";
+            var send = {
+                "gameID": ""
+            };
+            $.extend(send, data);
+
+            ajax_get(URLs, send, function() {
+            }).done(function(rt) {
+                try {
+                    var obj = json_decode(rt)
+                } catch (err) {
+                    console.log("parsing error!");
+                }
+                switch (obj.code) {
+                    case 100:
+                        mydata = new Array();
+                        mySubgrids = new Object();
+                        for (var i = 0; i < obj["data"].length; i++) {
+                            mydata.push(obj["data"][i]);
+                            mySubgrids[obj["data"][i]["lottery_id"]] = obj["data"][i]["history"];
+                        }
+
+                        jgrid.clearCurrent();
+                        jgrid.update(selector, jq, mydata);
+                        break;
+                    default:
+                        popup.alert(obj.msg);
+                        break;
+                }
+            });
+        }
+        this.trigger = function() {
+            $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+                var gameID = $('.gamePeriodError select.game_select').val();
+                var data = {
+                    "gameID": gameID
+                };
+
+                statusSel(data);
+
+            });
+        }
+        this.catchHn = function() {
+            var URLs = "{burl}lotteryapi/fun/lib_hn/hnData";
+
+            ajax_get(URLs, send, function() {
+                }).done(function(rt) {
+                    try {
+                        var obj = json_decode(rt);
+                    } catch (err) {
+                        console.log("parsing error!");
+                    }
+                    hnData = obj.data;
+                });
+
+        }
+        var init = function() {
+            $this.initGrid();
+            $this.catchData();
+            $this.catchHn();
+            $this.trigger();
+            $('#daterange').daterangepicker();
+        }
+        init();
+    }
+    //170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new gamePeriodError();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

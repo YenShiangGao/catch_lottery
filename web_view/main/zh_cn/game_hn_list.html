@@ -1,0 +1,149 @@
+<div class="hnUrl">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">地區
+                    <select class="area_select">
+                        <option value="">全部</option>
+                        <option value="NAM">南部</option>
+                        <option value="TRUNG">東部</option>
+                        <option value="BAC">北部</option>
+                    </select>
+                </li>
+                <li class="cls_site">開獎日
+                    <select class="w_select">
+                        <option value="">全部</option>
+                        <option value="1">星期一</option>
+                        <option value="2">星期二</option>
+                        <option value="3">星期三</option>
+                        <option value="4">星期四</option>
+                        <option value="5">星期五</option>
+                        <option value="6">星期六</option>
+                        <option value="0">星期日</option>
+                    </select>
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+        <!-- <div class="btns-group">
+            <button type="button" class="btns btns-blue btns-square hnUrl_Button_add">
+                <i class="icon-circle-plus"></i><span>新增</span>
+            </button>
+        </div> -->
+    </div>
+    <div class="hnUrl_div_grid">
+        <table id="hnUrl_jqGrid" style="width: 100%;"></table>
+        <div id="hnUrl_pagered"></div>
+    </div>
+</div>
+<script>
+var hnUrl = function() {
+    var $this = this;
+    var jq = "hnUrl";
+    var selector = '#' + jq + '_jqGrid';
+    var thisTab = $('section.active ' + selector);
+
+    this.trigger = function() {
+        $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+            var area = $('.hnUrl select.area_select').val();
+            var w = $('.hnUrl select.w_select').val();
+            var data = {
+                "area": area,
+                "w": w
+            };
+
+            $this.statusSel(data);
+
+        });
+
+        $('.' + jq + '_Button_add').off('click').off('click').on('click', function() {
+            ZgWindowFun.GoPage('main/pop/hnUrl/info', 'iframeSimple', {
+                width: 500,
+                height: 400
+            }, '新增');
+        });
+    }
+    this.catchData = function() {
+        var URLs = "{burl}lotteryapi/fun/lib_hn/hnUrlList";
+        var data = {};
+        minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+    }
+    this.statusSel = function(data) {
+        var URLs = "{burl}lotteryapi/fun/lib_hn/hnUrlList";
+        var send = {
+            "area": "",
+            "w": ""
+        };
+        $.extend(send, data);
+
+        minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+    }
+    var initGrid = function() {
+        var colNames = ['編號', '地區', '城市', '英文名稱', '中文名稱', '網址', '開獎日', '開獎總數', '開獎時間', '最後更新時間'],
+            colModel = [{
+                name: 'id',
+                width: 50,
+                key: true,
+                align: 'center',
+                sorttype: "int",
+                editable: false
+            }, {
+                name : 'area',
+                align : 'center',
+                width: 50,
+            }, {
+                name: 'city',
+                width: 100,
+            }, {
+                name: 'city_en',
+                width: 100,
+            }, {
+                name: 'city_ch',
+                width: 100,
+            }, {
+                name: 'url',
+                width: 250,
+            }, {
+                name: 'w'
+            }, {
+                name: 'lottery_num',
+                width: 50,
+                align: 'center',
+            }, {
+                name: 'PeriodsTime',
+                width: 100,
+            }, {
+                name: 'nowtime',
+                width: 100,
+            }];
+            opt = {
+                'rowNum':10,
+                'pager': '#hnUrl_pagered',
+                'footerrow':true,
+                'sortname':'id',
+                'sortorder':'asc',
+                gridComplete: function() {
+                    //當grid產出後，判斷是否會出現卷軸，若沒有卷軸則加上class="hideScroll"，隱藏原本jqgride會預留的卷軸空間
+                    thisTab.find('.ui-jqgrid-bdiv > div').innerHeight() <= $('.ui-jqgrid-bdiv').innerHeight() ? $('.ui-jqgrid').addClass('hideScroll') : $('.ui-jqgrid').removeClass('hideScroll');
+
+                },
+            }
+            jgrid.create(selector, jq, colNames, colModel, null, opt);
+    }
+    var init = function() {
+        initGrid();
+        $this.catchData();
+        /*daterangepicker*/
+        $('#daterange').daterangepicker();
+    }
+    init();
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new hnUrl();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

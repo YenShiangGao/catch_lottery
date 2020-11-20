@@ -1,0 +1,278 @@
+<div class="userLvl">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li>
+                    <h6 class="title">狀態</h6>
+                    <select name="status">
+                        <option value="">全部</option>
+                        <option value="1">停用</option>
+                        <option value="0">啟用</option>
+                    </select>
+                </li>
+                <li>
+                    <h6 class="title">分層</h6>
+                    <select name="lvl">
+                        <option value="">全部</option>
+                        <option value="0">超級管理員</option>
+                        <option value="1">高級管理員</option>
+                        <option value="2">管理員</option>
+                        <option value="3">一般使用者</option>
+                    </select>
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search" value="">搜索</button>
+                </li>
+            </ul>
+        </div>
+        <div class="btns-group">
+            <button type="button" class="btns btns-blue btns-square userLvl_Button_add" data-id="0">
+                <i class="icon-circle-plus"></i><span>新增</span>
+            </button>
+        </div>
+    </div>
+    <div class="userLvl_div_grid">
+        <table id="userLvl_jqGrid" style="width: 100%;"></table>
+    </div>
+    <!-- <div id="userLvl_pagered"></div> -->
+</div>
+<script>
+var userLvl = function() {
+    var $this = this;
+    var jq = "userLvl";
+    var selector = '#' + jq + '_jqGrid';
+    var grid = null;
+
+    this.trigger = function() {
+        $('.' + jq + '_Button_add').off('click').on('click', function() {
+            var upID = $(this).data('id');
+            ZgWindowFun.GoPage('main/pop/userLvl/info/' + upID, 'iframeSimple', {
+                width: 500,
+                height: 450
+            }, '新增');
+        });
+
+        $('.userLvl ul li .Button_search').off('click').on('click', function() {
+            var status = $('.userLvl select[name="status"]').val();
+            var lvl = $('.userLvl select[name="lvl"]').val();
+
+            var data = {
+                "status": status,
+                "lvl": lvl
+            };
+
+            $this.statusSel(data);
+
+        });
+    }
+    this.catchData = function() {
+        var URLs = "{burl}main/userLvl/list";
+        var send = {
+            "menuID": $('nav#xmenu ul.sidebar-menu li.active').data('funid'),
+            "funID": $('nav#xmenu ul.sidebar-menu li li.active').data('funid')
+        };
+
+        ajax_get(URLs, send, function() {
+            loading(true);
+        }).always(function() {
+            loading(false);
+        }).done(function(rt) {
+            try {
+                var obj = json_decode(rt)
+            } catch (err) {
+                console.log("parsing error!");
+            }
+            
+            switch (obj.code) {
+                case 100:
+                    try {
+                        var mydata = [];
+                        for (var i = 0; i < obj["data"].length; i++) {
+                            var data = new Object();
+                            var idata = obj["data"][i];
+                            idata["level"] = idata["level"] == undefined || idata["level"] == '' ? [] : idata["level"];
+
+                            data = dataFun(idata, 0, null, false);
+                            mydata.push(data);
+
+                            for (var j = 0; j < idata["level"].length; j++) {
+                                var data = new Object();
+                                var jdata = idata["level"][j];
+                                jdata["level"] = jdata["level"] == undefined || jdata["level"] == '' ? [] : jdata["level"];
+
+                                data = dataFun(jdata, 1, idata["id"], false);
+                                mydata.push(data);
+
+                                for (var n = 0; n < jdata["level"].length; n++) {
+                                    var data = new Object();
+                                    var ndata = jdata["level"][n];
+                                    ndata["level"] = ndata["level"] == undefined || ndata["level"] == '' ? [] : ndata["level"];
+
+                                    data = dataFun(ndata, 2, jdata["id"], false);
+                                    mydata.push(data);
+                                }
+                            }
+                        }
+
+                        // jgrid.clear(selector);
+                        // jgrid.update(selector, jq, mydata);
+
+                        if (obj["addBtn"] != undefined) {
+                            $('.' + jq + ' .btns-group').html('');
+                            $('.' + jq + ' .btns-group').html(obj["addBtn"]);
+                        }
+
+
+                        grid[0].addJSONData({
+                            total: 1,
+                            page: 1,
+                            records: mydata.length,
+                            rows: mydata
+                        });
+
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    break;
+                default:
+                    popup.alert(obj.msg);
+                    break;
+            }
+
+            $this.trigger();
+        });
+    }
+    this.statusSel = function(data) {
+        var URLs = "{burl}main/userLvl/list";
+        var send = {
+            "status": '',
+            "lvl": ''
+        };
+        $.extend(send, data);
+
+        ajax_get(URLs, send, function() {
+            loading(true);
+        }).always(function() {
+            loading(false);
+        }).done(function(rt) {
+            try {
+                var obj = json_decode(rt)
+            } catch (err) {
+                console.log("parsing error!");
+            }
+
+            switch (obj.code) {
+                case 100:
+                    try {
+                        var mydata = [];
+                        for (var i = 0; i < obj["data"].length; i++) {
+                            var data = new Object();
+                            var idata = obj["data"][i];
+                            idata["level"] = idata["level"] == undefined || idata["level"] == '' ? [] : idata["level"];
+
+                            data = dataFun(idata, 0, null, false);
+                            mydata.push(data);
+
+                            for (var j = 0; j < idata["level"].length; j++) {
+                                var data = new Object();
+                                var jdata = idata["level"][j];
+                                jdata["level"] = jdata["level"] == undefined || jdata["level"] == '' ? [] : jdata["level"];
+
+                                data = dataFun(jdata, 1, idata["id"], false);
+                                mydata.push(data);
+
+                                for (var n = 0; n < jdata["level"].length; n++) {
+                                    var data = new Object();
+                                    var ndata = jdata["level"][n];
+                                    ndata["level"] = ndata["level"] == undefined || ndata["level"] == '' ? [] : ndata["level"];
+
+                                    data = dataFun(ndata, 2, jdata["id"], false);
+                                    mydata.push(data);
+                                }
+                            }
+                        }
+
+                        grid[0].addJSONData({
+                            total: 1,
+                            page: 1,
+                            records: mydata.length,
+                            rows: mydata
+                        });
+
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    break;
+                default:
+                    popup.alert(obj.msg);
+                    break;
+            }
+
+            $this.trigger();
+        });
+    }
+
+    function dataFun(obj, level, parent, expend) {
+        var data = new Array();
+        data["id"] = obj["id"];
+        data["lvl_name"] = obj["lvl_name"];
+        data["status"] = obj["status"];
+        data["lvlcount"] = obj["lvlcount"];
+        data["act"] = obj["act"];
+        data["level"] = level;
+        data["parent"] = parent;
+        data["expanded"] = expend;
+        data["isLeaf"] = obj["level"].length > 0 ? false : true;
+
+        return data;
+    }
+    var initGrid = function() {
+        var colNames = ['ID', '名稱', '級別人數', '狀態', '操作選項'],
+            colModel = [{
+                name: 'id',
+                index: 'id',
+                key: true,
+                hidden: true
+            }, {
+                name: 'lvl_name',
+                align: 'center',
+                width: 70
+            }, {
+                name: 'lvlcount',
+                align: "center",
+            }, {
+                name: 'status',
+                align: 'center',
+                width: 60
+            }, {
+                name: 'act',
+                index: 'act',
+                align: 'center',
+                width: 100
+            }];
+
+        grid = jgrid.create(selector, jq, colNames, colModel, null, {
+            height: '100%',
+            rowNum: 10000,
+            //pager : "#ptreegrid",
+            sortname: 'id',
+            treeGrid: true,
+            treeGridModel: 'adjacency',
+            treedatatype: "local",
+            ExpandColumn: 'lvl_name'
+        });
+    }
+    var init = function() {
+        initGrid();
+        $this.catchData();
+        $('#daterange').daterangepicker();
+    }
+    init();
+};
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new userLvl();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

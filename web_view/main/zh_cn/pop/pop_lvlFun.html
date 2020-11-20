@@ -1,0 +1,93 @@
+<div class="pop_lvlFun">
+    <section>
+        <div class="col-md-12">
+        
+            <table class="formStyle tableList">
+                <tbody>
+                    <tr>
+                        <td>+<i class="fa fa-plus-circle" aria-hidden="true">+</i><input id="checkBox" type="checkbox">開獎結果</td>
+                    </tr>
+                    <tr>
+                        <td>+<input id="checkBox" type="checkbox">使用者選單</td>                        
+                    </tr>
+                    <tr>
+                        <td>　-<input id="checkBox" type="checkbox">使用者管理</td>                        
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center m-t-10 btn-gap">
+                <button type="button" onclick="top.ZgWindowFun.zw.CloseWin(top.$('#ZgWindow .currentWindows').attr('id'), true);" class="btns btns-pink">取消</button>
+                <button type="button" class="btns btns-skyBlue" onclick="_lvlFun.sendFn();">送出</button>
+            </div>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+var lvlFun = function() {
+	var $this = this;
+    var type = "{type}";
+    var lvlFun = JSON.parse('{data}');
+
+    if (type == "info")
+        var URLs = "{burl}main/lvlFun/add";
+    else
+        var URLs = "{burl}main/lvlFun/save";
+
+    this.sendFn = function() {
+        /*checknull(formname,檢查欄位)**/
+        var checkinp = {
+            "lvl_name": "請輸入階級名"
+        };
+        var checkresult = minejs.checknull('.pop_lvlFun', checkinp);
+        /******************************/
+
+        if (checkresult.status == true) {
+            var send = {
+                "id": "{id}",
+                "lvl_name": null,
+                "status": 0
+            };
+            $.extend(send, checkresult.data);
+
+            ajax_get(URLs, send, function() {
+                // loading(true);
+            }).always(function() {
+                // loading(false);
+            }).done(function(rt) {
+                try {
+                    var obj = json_decode(rt)
+                } catch (err) {
+                    console.log("parsing error!");
+                }
+
+                switch (obj.code) {
+                    case 100:
+                        popup.alertSuccess(obj.msg, function() {
+                            var zgID = top.$('#ZgWindow .currentWindows').attr('id');
+                            top.ZgWindowFun.zw.CloseWin(zgID);
+                            top.groupFun.currentfun.catchData();
+                        });
+                        break;
+                    default:
+                        popup.alertFalid(obj.msg);
+                        break;
+                }
+            });
+        } else {
+            popup.alert(checkresult.data);
+        }
+    }
+    this.defaultInfo = function() { //預設值
+
+    	console.log(lvlFun);
+        // if (type == "edit") { //修改時     
+        // 	$('input[name="status"]').filter('[value="' + "{status}" + '"]').prop('checked', true);  
+        // }
+    };
+    var init = function() {
+        $this.defaultInfo();
+    }
+    init();
+}
+var _lvlFun = new lvlFun();
+</script>

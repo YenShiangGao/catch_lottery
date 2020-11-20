@@ -1,0 +1,168 @@
+<div class="gameList">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">遊戲選擇
+                    <select class="game_select">
+                        <option value="">全部</option>
+                        {gameGroup}
+                        <option value="{id}">[{id}]{name}</option>
+                        {/gameGroup}
+                    </select>
+                </li>
+                <li class="cls_site">狀態
+                    <select class="enable_select">
+                        <option value="">全部</option>
+                        <option value="0">啟用</option>
+                        <option value="1">停用</option>
+                    </select>
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+        <div class="btns-group">
+            <button type="button" class="btns btns-blue btns-square gameList_Button_add">
+                <i class="icon-circle-plus"></i><span>新增</span>
+            </button>
+        </div>
+    </div>
+    <div class="gameList_div_grid">
+        <table id="gameList_jqGrid" style="width: 100%;"></table>
+        <div id="pagegameList" class="pageWrap"></div>
+    </div>
+</div>
+<script>
+var gameList = function() {
+    var $this = this;
+    var jq = "gameList";
+    var selector = '#' + jq + '_jqGrid';
+    var thisTab = $('section.active ' + selector);
+
+    this.trigger = function() {
+        $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+            var gameID = $('.gameList select.game_select').val();
+            var enable = $('.gameList select.enable_select').val();
+            var data = {
+                "gameID": gameID,
+                "enable": enable
+            };
+
+            $this.statusSel(data);
+
+        });
+
+        $('.' + jq + '_Button_add').off('click').on('click', function() {
+            ZgWindowFun.GoPage('main/pop/gameList/info', 'iframeSimple', {
+                width: 600,
+                height: 500
+            }, '新增');
+        });
+    }
+    this.catchData = function() {
+        var URLs = "{burl}main/gameList/list";
+        var data = {};
+        minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+    }
+    this.statusSel = function(data) {
+        var URLs = "{burl}main/gameList/list";
+        var send = {
+            "gameID": "",
+            "enable": ""
+        };
+        $.extend(send, data);
+
+        minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+    }
+    var initGrid = function() {
+        var colNames = ['編號', '名稱', '代號', '狀態', '週期', '信任組數', 'TG通知', 'TG通知時間(秒)','號碼重複', '參數', '參數2', '期數格式', '期數編碼', '號碼總數', '最小號碼', '最大號碼','最後更新時間', '操作選項'],
+            colModel = [{
+                name: 'id',
+                key: true,
+                align: 'center',
+                sorttype: "int",
+                editable: false,
+                width:100
+            }, {
+                name: 'cname',
+            }, {
+                name: 'ename',
+            }, {
+                name: 'enable',
+                align: 'center',
+                width:100
+            }, {
+                name: 'cycle',
+                align: 'center',
+                width:100
+            }, {
+                name: 'urlCheck',
+                align: 'center',
+                width:100
+            }, {
+                name: 'notice',
+                align: 'center',
+                width:100
+            }, {
+                name: 'noticeTime',
+                align: 'center',
+            }, {
+                name: 'repeat',
+                align: 'center',
+                width:100
+            }, {
+                name: 'param',
+            }, {
+                name: 'param_1',
+            }, {
+                name: 'period_format',
+                align: 'center',
+            }, {
+                name: 'period_num',
+                align: 'center',
+            }, {
+                name: 'lottery_num',
+                align: 'center',
+            }, {
+                name: 'min_number',
+                align: 'center',
+            }, {
+                name: 'max_number',
+                align: 'center',
+            }, {
+                name: 'nowtime',
+            }, {
+                name: 'act',
+                index: 'act',
+                align: 'center'
+            }];
+
+            opt = {
+                'rowNum':10,
+                'pager': '#pagegameList',
+                'footerrow':true,
+                'sortname': 'id',
+                gridComplete: function() {
+                    //當grid產出後，判斷是否會出現卷軸，若沒有卷軸則加上class="hideScroll"，隱藏原本jqgride會預留的卷軸空間
+                    thisTab.find('.ui-jqgrid-bdiv > div').innerHeight() <= $('.ui-jqgrid-bdiv').innerHeight() ? $('.ui-jqgrid').addClass('hideScroll') : $('.ui-jqgrid').removeClass('hideScroll');
+                },
+            }
+
+        jgrid.create(selector, jq, colNames, colModel, null, opt);
+    }
+    var init = function() {
+        initGrid();
+        $this.catchData();
+        /*daterangepicker*/
+        $('#daterange').daterangepicker();
+    }
+    init();
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new gameList();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

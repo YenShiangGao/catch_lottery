@@ -1,0 +1,154 @@
+<div>
+    <div class="filterWrap formStyle">
+        <div class="btns-group pull-left">
+            <button id="editSort" type="button" class="btns btns-green"><i class="fa fa-sort" aria-hidden="true"></i> <span>啟用調整排序<span></button>				
+			<button type="button" class="cancelSort btns btns-gary" onclick="funcList.switchSort(true);" style="display: none;"><span>取消<span></button>
+		</div>
+		<div class="btns-group">
+			<button type="button" onclick="funcList.addEditPerm('info');" class="addPerm btns btns-blue btns-square">
+				<i class="icon-circle-plus"></i><span>新增頁面、功能</span>
+            </button>
+        </div>
+    </div>
+    <div class="div_grid clearfix" style="overflow: auto;height: 620px;">
+        <div id="funcList" data-wrap-id="0" class="childWrap col-lg-8">
+            <span class="tempHtml" id="pWrap">
+			<div class="permWrap clearfix">
+				<div class="permTitle" data-id="^id^"><span style="display: none;"><i class="fa fa-ellipsis-v" aria-hidden="true"></i> </span>^title^
+            <div class="permOperate pull-right">
+                <button type="button" class="editPermBtn btns btns-sm btns-skyBlue"><i class="fa fa-pencil" aria-hidden="true"></i> 編輯</button>
+                <button type="button" class="delPermBtn btns btns-sm btns-red"><i class="fa fa-times" aria-hidden="true"></i> 刪除</button>
+            </div>
+        </div>
+        ^child^
+    </div>
+    </span>
+    <span class="tempHtml" id="pChildWrap">
+				<div class="childWrap" data-wrap-id="^id^">
+
+				</div>
+			</span>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+function funcList() {
+    var $this = this;
+    var st = new Array();
+    var disabledSort = true;
+
+    this.genPermEditList = function() {
+        var opt = {
+            "lv1Fn": function(permItem) {
+                var rpArr = new Array();
+                rpArr["title"] = permItem.name;
+                rpArr["id"] = permItem.id;
+                if (permItem.classify == "C") {
+                    var rp = {
+                        "id": permItem.id
+                    };
+                    rpArr["child"] = tools.repl(tempHtml.pChildWrap, rp);
+                } else if (permItem.classify == "I") {
+                    rpArr["child"] = "";
+                }
+                $('#funcList').append(tools.repl(tempHtml.pWrap, rpArr));
+            },
+            "lv2Fn": function(permItem) {
+                var rpArr = new Array();
+                rpArr["title"] = permItem.name;
+                rpArr["id"] = permItem.id;
+                if (permItem.classify == "C") {
+                    var rp = {
+                        "id": permItem.id
+                    };
+                    rpArr["child"] = tools.repl(tempHtml.pChildWrap, rp);
+                } else if (permItem.classify == "I") {
+                    rpArr["child"] = "";
+                }
+                $('div[data-wrap-id="' + permItem.up_id + '"]').append(tools.repl(tempHtml.pWrap, rpArr));
+            },
+            "lv3Fn": function(permItem) {
+                var rpArr = new Array();
+                rpArr["title"] = permItem.name;
+                rpArr["id"] = permItem.id;
+                if (permItem.classify == "I") {
+                    rpArr["child"] = "";
+                }
+                $('div[data-wrap-id="' + permItem.up_id + '"]').append(tools.repl(tempHtml.pWrap, rpArr));
+            },
+            "doneFn": function() {
+                $this.sortInit();
+                $('.editPermBtn').on('click', function() {
+                    $this.addEditPerm("edit", $(this).parent().parent('.permTitle').attr('data-id'));
+                });
+                $('.delPermBtn').on('click', function() {
+                    $this.delPerm($(this).parent().parent('.permTitle').attr('data-id'));
+                });
+            }
+        };
+        $('#funcList').html('');
+        ctlNew.getPerm(opt);
+    }
+    this.delPerm = function(permId) {
+        popup.confirm('Del', '確定要刪除' + permId, function() {
+            tableAct.del('funcList', permId);
+        });
+    }
+    this.sortInit = function() {
+        $('.childWrap').each(function() {
+            var wrapId = $(this).attr('data-wrap-id');
+            st[wrapId] = Sortable.create(this, {
+                handle: '.permTitle',
+                group: 'perm',
+                animation: 150
+            });
+            st[wrapId].option("disabled", disabledSort);
+        });
+    }
+    this.switchSort = function(state) {
+        disabledSort = state;
+        if (state) { //關閉排序
+            var editBtnText = "啟用調整排序";
+            $('.cancelSort').hide();
+            $this.genPermEditList();
+        } else { //啟用排序
+            var editBtnText = "送出調整排序";
+            $('.cancelSort').show();
+            $('.permOperate').hide();
+            $('.permTitle>span').show();
+            $('.permTitle').addClass('move');
+        }
+        for (var i in st) st[i].option("disabled", state);
+        $('#editSort>span').text(editBtnText);
+    }
+    this.addEditPerm = function(type, permId = false) {
+        var title = {
+            "info": "新增",
+            "edit": "修改"
+        };
+        ZgWindowFun.GoPage('main/pop/funcList/' + type + "/" + permId, 'iframeSimple', {
+            width: 500,
+            height: 450
+        }, title[type] + "頁面、功能");
+
+    }
+
+    $('#editSort').on('click', function() {
+        disabledSort = !disabledSort;
+        $this.switchSort(disabledSort);
+    });
+
+    var init = function() {
+        $this.genPermEditList();
+    }
+    init();
+}
+
+tools.tempHtml();
+var funcList = new funcList();
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = funcList;
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

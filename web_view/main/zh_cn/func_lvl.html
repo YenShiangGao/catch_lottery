@@ -1,0 +1,104 @@
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css"/>
+ 
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
+
+<div class="funcLvl">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+        </div>
+        <div class="btns-group">
+            <button type="button" class="btns btns-blue btns-square funcLvl_Button_add">
+                <i class="icon-circle-plus"></i><span>新增</span>
+            </button>
+        </div>
+    </div>
+    <div class="funcLvl_div_grid">
+        <table id="funcLvl_jqGrid" style="width: 100%;"></table>
+    </div>
+    <!-- <div id="funcLvl_pagered"></div> -->
+</div>
+<script>
+var funcLvl = function() {
+    var $this = this;
+    var jq = "funcLvl";
+    var selector = '#' + jq + '_jqGrid';
+
+    this.catchData = function() {
+        var URLs = "{burl}main/funcLvl/list";
+        var data = {};
+        minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+    }
+    this.trigger = function() {
+        $('.' + jq + '_Button_add').off('click').on('click', function() {
+            ZgWindowFun.GoPage('main/pop/funcLvl/info', 'iframeSimple', {
+                width: 500,
+                height: 450
+            }, '新增');
+        });
+    }
+    var initGrid = function() {
+        var colNames = ['編號', '階級', '功能', '新增', '刪除', '修改', '觀看', '狀態', '最後更新時間', 'Actions'],
+            colModel = [{
+                name: 'id',
+                width: 50,
+                key: true,
+                align: 'center',
+                sorttype: "int"
+            }, {
+                name: 'lvl_name',
+                width: 70
+            }, {
+                name: 'per_name',
+                width: 70
+            }, {
+                name: 'addcol',
+                align: 'center',
+                width: 50
+            }, {
+                name: 'editcol',
+                align: 'center',
+                width: 50
+            }, {
+                name: 'delcol',
+                align: 'center',
+                width: 50
+            }, {
+                name: 'look',
+                align: 'center',
+                width: 50
+            }, {
+                name: 'enable',
+                align: 'center',
+                width: 60
+            }, {
+                name: 'nowtime',
+                // width: 80,
+                sorttype: "int",
+                editable: false
+            }, {
+                name: 'act',
+                index: 'act',
+                // width: 140
+            }];
+
+        jgrid.create(selector, jq, colNames, colModel);
+    }
+    var init = function() {
+        initGrid();
+        $this.catchData();
+        /*daterangepicker*/
+        $('#daterange').daterangepicker();
+    }
+    // init();
+
+    $(document).ready( function () {
+        $('#myTable').DataTable();
+    } );
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new funcLvl();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

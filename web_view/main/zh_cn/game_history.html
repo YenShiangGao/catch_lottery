@@ -1,0 +1,515 @@
+<div class="gameHistory">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">遊戲選擇
+                    <select class="game_select">
+                        {gameGroup}
+                        <option value="{id}">[{id}]{name}</option>
+                        {/gameGroup}
+                    </select>
+                </li>
+                <li class="cls_site">期數
+                    <input type="input" class="period">
+                </li>
+                <li class="cls_site">開獎日期
+                    <input type="date" class="date">
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="gameHistory_div_grid">
+        <table id="gameHistory_jqGrid" style="width: 100%;"></table>
+        <div id="gameHistoryPagered"></div>
+    </div>
+</div>
+<style>
+.open_bell {
+    font-family: 'arial';
+    font-size: 13px;
+    color: #FFF;
+    border: 1px #e61313 solid;
+    background: #e61313;
+    border-radius: 13px;
+    width: 25px;
+    height: 24px;
+    padding: 0px;
+    margin: 0 auto;
+}
+
+.searchBar .form-group-long.lottery_date_long {
+    width: 440px;
+}
+
+.LadderLotImg {
+    display: inline-block;
+    position: relative;
+    width: 26px;
+    height: 26px;
+    margin: 4px;
+    color: #FFF;
+    border-radius: 13px;
+}
+
+.LadderLotImg:before {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding-top: 3px;
+    text-align: center;
+    left: 0;
+}
+
+.LadderLotImg:after {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #000;
+    color: #FFF;
+    font-size: 11px;
+    line-height: 16px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.Lot01,
+.Lot10 {
+    background: #106DE1;
+}
+
+.Lot01:before,
+.Lot10:before {
+    content:'{lang_game_ladder_lot_E0}';
+}
+
+.Lot01:after {
+    top: -6px;
+    left: -6px;
+    content: '4';
+}
+
+.Lot10:after {
+    top: -6px;
+    right: -6px;
+    content: '3';
+}
+
+.Lot00,
+.Lot11 {
+    background: #D00000;
+}
+
+.Lot00:before,
+.Lot11:before {
+    content:'{lang_game_ladder_lot_E1}';
+}
+
+.Lot00:after {
+    top: -6px;
+    left: -6px;
+    content: '3';
+}
+
+.Lot11:after {
+    top: -6px;
+    right: -6px;
+    content: '4';
+}
+
+.Snail_lot {
+    position: relative;
+    font-family: 'arial';
+    font-size: 15px;
+    color: #FFF;
+    border-radius: 18px;
+    width: 28px;
+    height: 28px;
+    padding: 2px 4px;
+    margin: 0 auto;
+}
+
+.Snail_lot.sanil_1 {
+    border: 1px #d00000 solid;
+    background: #d00000;
+}
+
+.Snail_lot.sanil_2 {
+    border: 1px #68aa1b solid;
+    background: #68aa1b;
+}
+
+.Snail_lot.sanil_3 {
+    border: 1px #005dc6 solid;
+    background: #005dc6;
+}
+
+.six_color_red {
+    color: #fff;
+    border: 0;
+    background: linear-gradient(to bottom, rgba(255, 34, 34, 1) 0%, rgba(174, 5, 17, 1) 100%);
+}
+
+.six_color_blue {
+    color: #fff;
+    border: 0;
+    background: linear-gradient(to bottom, rgba(26, 125, 236, 1) 0%, rgba(25, 83, 179, 1) 100%);
+}
+
+.six_color_green {
+    color: #fff;
+    border: 0;
+    background: linear-gradient(to bottom, rgba(129, 214, 3, 1) 0%, rgba(44, 139, 2, 1) 100%);
+}
+</style>
+<script>
+var gameHistory = function() {
+        var $this = this;
+        var jq = "gameHistory";
+        var selector = '#' + jq + '_jqGrid';
+        var thisTab = $('.' + jq);
+        var hnData = [];
+        
+        this.trigger = function(len, mydata) {
+            $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+                var gameID = thisTab.find('select.game_select').val();
+                var date = thisTab.find('input.date').val();
+                var period = thisTab.find('input.period').val();
+                var data = {
+                    "gameID": gameID,
+                    "date": date,
+                    "period": period,
+                };
+                $this.statusSel(data);
+            });
+            $('div#gbox_gameHistory_jqGrid').remove();
+            $('div.gameHistory_div_grid').append('<table id="gameHistory_jqGrid" style="100:100%"></table>');
+            initGrid(mydata);
+        }
+        this.catchData = function() {
+            var URLs = "{burl}main/gameHistory/list";
+            var data = {};
+            minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+        }
+        this.statusSel = function(data) {
+            var URLs = "{burl}main/gameHistory/list";
+            var send = {
+                "gameID": "",
+                "date": "",
+                "period": ""
+            };
+            $.extend(send, data);
+            minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+        }
+        this.catchHn = function() {
+            var URLs = "{burl}lotteryapi/fun/lib_hn/hnData";
+
+            ajax_get(URLs, send, function() {
+                    loading(true);
+                }).always(function() {
+                    loading(false);
+                }).done(function(rt) {
+                    try {
+                        var obj = json_decode(rt);
+                    } catch (err) {
+                        console.log("parsing error!");
+                    }
+                    hnData = obj.data;
+                });
+
+        }
+        var initGrid = function(data) {
+            var numberOfColumns = 0
+            var gameID = $('.gameHistory select.game_select').val()
+            var colNames = ['編號', '遊戲名稱', '期數編碼']
+            var colModel = [{
+                name: 'id',
+                key: true,
+                hidden: true
+            }, {
+                name: 'name',
+                align: 'center',
+                width: 70,
+                formatter: function(cv, opt, obj) {
+                    if (obj.ename == 'hn') {
+                        let str = obj.period_str.split('_');
+                        if (hnData[str[1] - 1] == undefined )
+                            var city = '';
+                        else
+                            var city = hnData[str[1] - 1]['city_en'];
+                        return city;
+
+                    } else {
+                        return obj.name;
+                    }
+                }
+            }, {
+                name: 'period_str',
+                align: 'center',
+                width: 70
+            }]
+
+            switch (gameID) {
+                case'6':case'7':case'8':case'10':case'24':
+                    numberOfColumns = 3;
+                    var str_ary = [
+                        '{lang_game_lot_hundred}',
+                        '{lang_game_lot_ten}',
+                        '{lang_game_lot_a}',
+                    ];
+                    var s = "?";
+                    var colPush = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        var lo = (data[i]['lottery']).split(',');
+                        if (lo.length > 1) {
+                            colPush = new Array();
+                            for (var j = 0; j < lo.length; j++) {
+                                var key = 'lottery_' + j;
+                                data[i][key] = '<div class="Snail_lot six_color_red">' + lo[j] + '</div>';
+                                colPush.push(key);
+                            }
+                        }
+                    }
+                    for (var i = 0; i < colPush.length; i++) {
+                        colNames.push(str_ary[i])
+                        colModel.push({
+                            'width': 25,
+                            'name': colPush[i],
+                            'align': 'center',
+                            'sortable':false
+                        });
+                    }
+                    break;
+                case '9':case'25':case'180':
+                    numberOfColumns = 10;
+                    var str_ary = [
+                        '{lang_game_lot_rank_1}',
+                        '{lang_game_lot_rank_2}',
+                        '{lang_game_lot_rank_3}',
+                        '{lang_game_lot_rank_4}',
+                        '{lang_game_lot_rank_5}',
+                        '{lang_game_lot_rank_6}',
+                        '{lang_game_lot_rank_7}',
+                        '{lang_game_lot_rank_8}',
+                        '{lang_game_lot_rank_9}',
+                        '{lang_game_lot_rank_10}',
+                    ];
+                    var s = "?";
+                    var colPush = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        var lo = (data[i]['lottery']).split(',');
+                        if (lo.length > 1) {
+                            colPush = new Array();
+                            for (var j = 0; j < lo.length; j++) {
+                                var key = 'lottery_' + j;
+                                data[i][key] = '<div class="Snail_lot six_color_red">' + lo[j] + '</div>';
+                                colPush.push(key);
+                            }
+                        }
+                    }
+                    for (var i = 0; i < colPush.length; i++) {
+                        colNames.push(str_ary[i])
+                        colModel.push({
+                            'width': 25,
+                            'name': colPush[i],
+                            'align': 'center',
+                            'sortable':false
+                        });
+                    }
+                    break;
+                case '66':
+                    numberOfColumns = 7;
+                    var six_group = {
+                        "red": ["01", "02", "07", "08", "12", "13", "18", "19", "23", "24", "29", "30", "34", "35", "40", "45", "46"],
+                        "blue": ["03", "04", "09", "10", "14", "15", "20", "25", "26", "31", "36", "37", "41", "42", "47", "48"],
+                        "green": ["05", "06", "11", "16", "17", "21", "22", "27", "28", "32", "33", "38", "39", "43", "44", "49"]
+                    };
+                    var Item = ["{lang_game_mouse}", "{lang_game_cattle}", "{lang_game_tiger}", "{lang_game_rabbit}", "{lang_game_dragon}", "{lang_game_snake}", "{lang_game_horse}", "{lang_game_sheep}", "{lang_game_monkey}", "{lang_game_chicken}", "{lang_game_dog}", "{lang_game_pig}"];
+
+                    var str_ary = [
+                        '{lang_game_one}',
+                        '{lang_game_two}',
+                        '{lang_game_three}',
+                        '{lang_game_four}',
+                        '{lang_game_five}',
+                        '{lang_game_six}',
+                        '{lang_game_special}'
+                    ];
+                    var s = "?";
+                    var colPush = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        var lo = (data[i]['lottery']).split(',');
+                        if (lo.length > 1) {
+                            colPush = new Array();
+                            for (var j = 0; j < lo.length; j++) {
+                                var found = Shengxiao.GetShengToNumber(lo[j], data[i].periods_date);
+                                var color = null;
+
+                                for (var k in six_group) {
+                                    six_group[k].find(function(element) {
+                                        if (element == lo[j])
+                                            color = k;
+                                    });
+                                }
+                                var key = 'lottery_' + j;
+                                data[i][key] = '<div class="Snail_lot six_color_' + color + '">' + lo[j] + '</div>' + found;
+                                colPush.push(key);
+                            }
+                        }
+                    }
+                    for (var i = 0; i < colPush.length; i++) {
+                        colNames.push(str_ary[i])
+                        colModel.push({
+                            'width': 25,
+                            'name': colPush[i],
+                            'align': 'center',
+                            'sortable':false
+                        });
+                    }
+                    break;
+                case '110':case '155':
+                    numberOfColumns = 10;
+                    var str_ary = [
+                        '{lang_game_vdn_lot_item_0}',
+                        '{lang_game_vdn_lot_item_1}',
+                        '{lang_game_vdn_lot_item_2}',
+                        '{lang_game_vdn_lot_item_3}',
+                        '{lang_game_vdn_lot_item_4}',
+                        '{lang_game_vdn_lot_item_5}',
+                        '{lang_game_vdn_lot_item_6}',
+                        '{lang_game_vdn_lot_item_7}',
+                        '{lang_game_vdn_lot_item_8}'
+                    ];
+
+                    var colPush = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        var lo = data[i]['lottery'] == '' ? [] : JSON.parse(data[i]['lottery']);
+                        var len = Object.keys(lo).length;
+                        if (len != 9) numberOfColumns = len;
+
+                        if (len > 1) {
+                            colPush = new Array();
+                            for (var j = 0; j < len; j++) {
+                                var key = 'lottery_' + j;
+                                data[i][key] = (lo[j]).join('\n');
+                                colPush.push(key);
+                            }
+                        }
+                    }
+                    for (var i = 0; i < colPush.length; i++) {
+                        colNames.push(str_ary[i])
+                        colModel.push({
+                            'width': 30,
+                            'name': colPush[i],
+                            'align': 'center',
+                            'sortable':false
+                        });
+                    }
+                    break;
+                default:
+                    numberOfColumns = 5;
+                    var str_ary = [
+                        '{lang_game_lot_ten_thousand}',
+                        '{lang_game_lot_thousand}',
+                        '{lang_game_lot_hundred}',
+                        '{lang_game_lot_ten}',
+                        '{lang_game_lot_a}',
+                    ];
+                    var s = "?";
+                    var colPush = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        var lo = (data[i]['lottery']).split(',');
+                        if (lo.length > 1) {
+                            colPush = new Array();
+                            for (var j = 0; j < lo.length; j++) {
+                                var key = 'lottery_' + j;
+                                data[i][key] = '<div class="Snail_lot six_color_red">' + lo[j] + '</div>';
+                                colPush.push(key);
+                            }
+                        }
+                    }
+                    
+                    if (colPush.length == 0) {
+                        colNames.push('開獎號碼')
+                        colModel.push({
+                            'width': 30,
+                            'name': '',
+                            'align': 'center',
+                            'sortable':false
+                        });
+                    } else {
+                        for (var i = 0; i < colPush.length; i++) {
+                            colNames.push(str_ary[i])
+                            colModel.push({
+                                'width': 30,
+                                'name': colPush[i],
+                                'align': 'center',
+                                'sortable':false
+                            });
+                        }
+                    }
+                    break;
+            }
+            
+            colNames.push('開獎時間', '來源Url')
+            colModel.push({
+                name: 'lottery_time',
+                align: 'center',
+                width: 80
+            }, {
+                name: 'url_id',
+                align: 'center',
+                width: 80,
+                formatter: function(cv, opt, obj) {
+                    if (obj.url_id == null)
+                        return '官網'
+                    else 
+                        return obj.url_id
+                }
+            })
+            
+
+            opt = {
+                'data':data,
+                'rowNum':1440,
+                'pager': '#gameHistoryPagered',
+                'footerrow':true,
+                'sortname': 'period_str',
+                'sortorder':'desc',
+                gridComplete: function() {
+                    //當grid產出後，判斷是否會出現卷軸，若沒有卷軸則加上class="hideScroll"，隱藏原本jqgride會預留的卷軸空間
+                    thisTab.find('.ui-jqgrid-bdiv > div').innerHeight() <= $('.ui-jqgrid-bdiv').innerHeight() ? $('.ui-jqgrid').addClass('hideScroll') : $('.ui-jqgrid').removeClass('hideScroll');
+
+                },
+            }
+
+            jgrid.create(selector, jq, colNames, colModel, null, opt)
+
+            jgrid.setGroupHeaders(selector, {
+                useColSpanStyle: true,
+                groupHeaders: [{
+                    startColumnName: 'lottery_0',
+                    numberOfColumns: numberOfColumns,
+                    titleText: '{lang_game_trend_lot_number}'
+                }]
+            })
+        }
+        var init = function() {
+            $this.catchData();
+            $this.catchHn();
+            /*daterangepicker*/
+            $('#daterange').daterangepicker();
+
+            var today = tools.dateChange();
+            $('[type="date"]').val(today);
+        }
+        init();
+    }
+    //170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new gameHistory();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

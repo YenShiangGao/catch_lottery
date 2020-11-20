@@ -1,0 +1,140 @@
+<div class="gameVac">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">年份
+                    <select class="year_select yearAry">
+                    </select>
+                </li>
+                <li class="cls_site">狀態
+                    <select class="enable_select">
+                        <option value="">全部</option>
+                        <option value="0">啟用</option>
+                        <option value="1">停用</option>
+                    </select>
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+        <div class="btns-group">
+            <button type="button" class="btns btns-blue btns-square gameVac_Button_add">
+                <i class="icon-circle-plus"></i><span>新增</span>
+            </button>
+        </div>
+    </div>
+    <div class="gameVac_div_grid">
+        <table id="gameVac_jqGrid" style="width: 100%;"></table>
+        <div id="gameVac_pagered"></div>
+    </div>
+</div>
+<script>
+var gameVac = function() {
+    var $this = this;
+    var jq = "gameVac";
+    var selector = '#' + jq + '_jqGrid';
+    var thisTab = $('section.active ' + selector);
+
+    this.trigger = function(length, mydata, obj) {
+        if(!$('.gameVac select.yearAry').hasClass('successSel')) {
+            var str = '<option value="">全部</option>'
+            for(var i = 0; i < obj.yearAry.length; i++) {
+                str += '<option value="'+obj.yearAry[i]+'">'+obj.yearAry[i]+'</option>'
+            }
+            var opt = $(str)
+            $('.gameVac select.yearAry').append(opt)
+            $('.gameVac select.yearAry').addClass('successSel')
+        }
+        $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+            var year = $('.'+jq+' select.year_select').val();
+            var enable = $('.'+jq+' select.enable_select').val();
+            var data = {
+                "year": year,
+                "enable": enable
+            };
+            
+            $this.statusSel(data);
+        });
+
+        $('.' + jq + '_Button_add').off('click').on('click', function() {
+            ZgWindowFun.GoPage('main/pop/gameVac/info', 'iframeSimple', {
+                width: 500,
+                height: 450
+            }, '新增');
+        });
+    }
+    this.catchData = function() {
+        var URLs = "{burl}main/gameVac/list";
+        var data = {};
+        minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+    }
+    this.statusSel = function(data) {
+        var URLs = "{burl}main/gameVac/list";
+        var send = {
+            "year": "",
+            "enable": ""
+        };
+        $.extend(send, data);
+
+        minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+    }
+    var initGrid = function() {
+        var colNames = ['編號', '遊戲名稱', '假期開始', '假期結束', '狀態', '最後更新時間', '操作選項'],
+            colModel = [{
+                name: 'id',
+                width: 50,
+                key: true,
+                align: 'center',
+                sorttype: "int",
+                editable: false
+            }, {
+                name: 'game_id',
+                align: 'center'
+            }, {
+                name: 'vacStart',
+                align: 'center'
+            }, {
+                name: 'vacEnd',
+                align: 'center'
+            }, {
+                name: 'enable',
+                align: 'center'
+            }, {
+                name: 'nowtime'
+            }, {
+                name: 'act',
+                index: 'act',
+                align: 'center'
+            }];
+
+            opt = {
+                'rowNum':10,
+                'pager': '#gameVac_pagered',
+                'footerrow':true,
+                'sortname':'nowtime',
+                'sortorder':'desc',
+                gridComplete: function() {
+                    //當grid產出後，判斷是否會出現卷軸，若沒有卷軸則加上class="hideScroll"，隱藏原本jqgride會預留的卷軸空間
+                    thisTab.find('.ui-jqgrid-bdiv > div').innerHeight() <= $('.ui-jqgrid-bdiv').innerHeight() ? $('.ui-jqgrid').addClass('hideScroll') : $('.ui-jqgrid').removeClass('hideScroll');
+
+                },
+            }
+            jgrid.create(selector, jq, colNames, colModel, null, opt);
+    }
+    var init = function() {
+        initGrid()
+        $this.catchData()
+
+        /*daterangepicker*/
+        $('#daterange').daterangepicker()
+    }
+    init()
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new gameVac();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

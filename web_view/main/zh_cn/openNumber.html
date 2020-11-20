@@ -1,0 +1,113 @@
+<div class="openNumber">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li>
+                    <h6 class="title">增加欄位</h6>
+                    <input type="number" value="1" name="col">
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_add">增加</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+var openNumber = function() {
+    var $this = this;
+    var jq = "openNumber";
+    var selector = '#' + jq + '_jqGrid';
+
+    this.statusSel = function(type, data) {
+        var URLs = "{burl}main/openNumber/" + type;
+        var sendData = new Object();
+        sendData["data"] = data;
+
+        ajax_get(URLs, sendData, function() {
+            loading(true);
+        }).always(function() {
+            loading(false);
+        }).done(function(rt) {
+            try {
+                var obj = json_decode(rt)
+            } catch (err) {
+                console.log("parsing error!");
+            }
+
+            switch (obj.code) {
+                case 100:
+                    var data;
+                    for (var key in obj.data) {
+                        if (data == undefined)
+                            data = "";
+                        data += obj.data[key]["msg"] + "<br>";
+                    }
+                    popup.alert(data);
+                    break;
+                default:
+                    popup.alert(obj.msg);
+                    break;
+            }
+        });
+    }
+    var trigger = function() {
+        $('.' + jq + ' ul li .Button_add').off('click').on('click', function() {
+            var col = $('input[name="col"]').val();
+            pageDom(col);
+        });
+        $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+            var elem = $('.openNumber .search-group ul[class="search"]');
+            var data = new Array();
+            for (var i = 0; i < elem.length; i++) {
+                var gameID = $(elem[i]).find('li select.game_select').val();
+                var period = $(elem[i]).find('input[name="period"]').val();
+                var number = $(elem[i]).find('input[name="number"]').val();
+
+                var value = {
+                    "gameID": gameID,
+                    "period": period,
+                    "number": number
+                };
+                data.push(value);
+            }
+            $this.statusSel("search", data);
+        });
+    }
+    var pageDom = function(col) {
+        if (col === '') col = 1;
+        // $('.' + jq + ' .search-group').html('');
+        // var add = $('<ul><li><h6 class="title">增加欄位</h6><input type="number" value="1" name="col"></li><li><button type="button" class="btns btns-red Button_add">增加</button></li></ul>');
+        // $('.' + jq + ' .search-group').append(add);
+
+        var btn = $('<li class="searchBtn"><button type="button" class="btns btns-red Button_search">搜索</button></li>');
+        for (var i = 0; i < col; i++) {
+        	$('.searchBtn').remove();
+            var ul = $('<ul class="search"></ul>');
+            var gameSelect = $('<li class="cls_site">遊戲選擇' +
+                '<select class="game_select">' +
+                '{gameGroup}' +
+                '<option value="{id}">[{id}]{name}</option>' +
+                '{/gameGroup}' +
+                '</select>' +
+                '</li>');
+            var period = $('<li><h6 class="title">期數</h6><input type="text" value="" name="period"></li>');
+            var number = $('<li><h6 class="title">號碼</h6><input type="text" value="" name="number"></li>');
+            ul.append(gameSelect).append(period).append(number).append(btn);
+            $('.' + jq + ' .search-group').append(ul);
+        }
+        trigger();
+    }
+    var init = function() {
+        pageDom(1);
+        trigger();
+    }
+    init();
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new openNumber();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

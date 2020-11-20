@@ -1,0 +1,108 @@
+<div class="OpenCheck">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">遊戲選擇
+                    <select class="game_select">
+                        {gameGroup}
+                        <option value="{id}">[{id}]{name}</option>
+                        {/gameGroup}
+                    </select>
+                </li>
+                <li class="cls_site">開獎日期
+                    <input type="date" class="date_select">
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="OpenCheck_div_grid">
+        <table id="OpenCheck_jqGrid"></table>
+    </div>
+    <!-- <div id="OpenCheck_pagered"></div> -->
+</div>
+<script>
+var OpenCheckFu = function() {
+    var $this = this;
+    var jq = "OpenCheck";
+    var selector = '#' + jq + '_jqGrid';
+
+    this.trigger = function() {
+        $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+            var gameID = $('.OpenCheck select.game_select').val();
+            var date = $('.OpenCheck input.date_select').val();
+            var data = {
+                "gameID": gameID,
+                "date": date,
+            };
+
+            $this.statusSel(data);
+
+        });
+    }
+    this.catchData = function() {
+            var URLs = "{burl}testSpeed/catchLottery";
+            var data = {};
+            minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+        }
+    this.statusSel = function(data) {
+        var URLs = "{burl}testSpeed/catchLottery";
+        var send = {
+            "gameID": "",
+            "date": "",
+        };
+        $.extend(send, data);
+        minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+    }
+    var initGrid = function() {
+        var colNames = ['遊戲名稱','期數', '測試站', '正式站', '比對號碼結果','差距'],
+            colModel = [{
+                name: 'game_id',
+                align: 'center',
+            }, {
+                name: 'period_str',
+                align: 'center',
+            }, {
+                name: 'tryLotteryTime',
+                align: 'center',
+            }, {
+                name: 'forLotteryTime',
+                align: 'center',
+            }, {
+                name: 'resault',
+                align: 'center',
+            }, {
+                name: 'gap',
+                align: 'center',
+            }];
+
+        jgrid.create(selector, jq, colNames, colModel, null, {
+            sortname: 'period_str',
+            sortorder: 'desc', //'asc'
+        });
+    }
+    var init = function() {
+        initGrid();
+        $this.catchData();
+        $('#daterange').daterangepicker();
+
+        var today = tools.dateChange();
+        $('[type="date"]').val(today);
+    }
+    init();
+
+    // setInterval(function(){
+    // 	init();
+    // },1000*60);
+
+
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new OpenCheckFu();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

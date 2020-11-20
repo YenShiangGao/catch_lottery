@@ -1,0 +1,193 @@
+{data}
+<div class="pop_gameList">
+    <section>
+        <div class="col-md-12">
+            <form id="formPost" name="formPost" method="POST">
+                <table class="formStyle tableList">
+                    <tbody>
+                        <tr>
+                            <th>名　　稱：</th>
+                            <td>
+                                <input type="text" name="cname" value="{cname}">
+                            </td>
+                            <th>代　　號：</th>
+                            <td>
+                                <input type="text" name="ename" value="{ename}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>狀　　態：</th>
+                            <td>
+                                <label class="radio-blue">
+                                    <input type="radio" name="enable" value="0" checked><span>啟用</span></label>
+                                <label class="radio-blue">
+                                    <input type="radio" name="enable" value="1"><span>停用</span></label>
+                            </td>
+                            <th>通知狀態：</th>
+                            <td>
+                                <label class="radio-blue">
+                                    <input type="radio" name="notice" value="Y" checked><span>啟用</span></label>
+                                <label class="radio-blue">
+                                    <input type="radio" name="notice" value="N"><span>停用</span></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>號碼重複：</th>
+                            <td>
+                                <label class="radio-blue">
+                                    <input type="radio" name="repeat" value="Y" checked><span>可以</span></label>
+                                <label class="radio-blue">
+                                    <input type="radio" name="repeat" value="N"><span>不可以</span></label>
+                            </td>
+                            <th>遊戲週期：</th>
+                            <td>
+                                <input type="text" name="cycle" value="{cycle}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>參　　數：</th>
+                            <td>
+                                <input type="text" name="param" value="{param}">
+                            </td>
+                            <th>參　 數2：</th>
+                            <td>
+                                <input type="text" name="param_1" value="{param_1}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>期數格式：</th>
+                            <td>
+                                <input type="text" name="period_format" value="{period_format}">
+                            </td>
+                            <th>期數編碼：</th>
+                            <td>
+                                <input type="number" name="period_num" value="{period_num}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>號碼總數：</th>
+                            <td>
+                                <input type="number" name="lottery_num" value="{lottery_num}">
+                            </td>
+                            <th>最小號碼：</th>
+                            <td>
+                                <input type="number" name="min_number" value="{min_number}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>最大號碼：</th>
+                            <td>
+                                <input type="number" name="max_number" value="{max_number}">
+                            </td>
+                            <th>信任組數：</th>
+                            <td>
+                                <input type="number" name="urlCheck" value="{urlCheck}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>通知時間(秒)：</th>
+                            <td>
+                                <input type="number" name="noticeTime" value="{noticeTime}">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center m-t-10 btn-gap" style="margin: 16px;">
+                    <button type="button" onclick="top.ZgWindowFun.zw.CloseWin(top.$('#ZgWindow .currentWindows').attr('id'), true);" class="btns btns-pink">取消</button>
+                    <button type="button" class="btns btns-skyBlue" onclick="_gameList.sendFn();">送出</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+var gameList = function() {
+    var $this = this;
+    var type = "{type}";
+
+    if (type == "info")
+        var URLs = "{burl}main/gamelist/add";
+    else
+        var URLs = "{burl}main/gamelist/save";
+
+    this.sendFn = function() {
+        /*checknull(formname,檢查欄位)**/
+        var checkinp = {
+            "cname": "請輸入名稱",
+            "cycle": "請輸入遊戲週期",
+            "period_num": "請輸入期數編碼 ",
+            "lottery_num": "請輸入號碼總數",
+            "min_number": "請輸入最小號碼",
+            "max_number": "請輸入最大號碼"
+        };
+        var checkresult = minejs.checknull('.pop_gameList', checkinp);
+        /******************************/
+
+        if (checkresult.status == true) {
+            var send = {
+                "id": "{id}",
+                "cname": 'n/a',
+                "enable": 0,
+                "notice": 0,
+                "repeat": 0,
+                "cycle": 'n/a',
+                "param": 'n/a',
+                "param_1": 'n/a',
+                "period_format": 'n/a',
+                "period_num": 'n/a',
+                "lottery_num": 'n/a',
+                "min_number": 'n/a',
+                "max_number": 'n/a',
+                "urlCheck": 'n/a'
+            };
+            $.extend(send, checkresult.data);
+
+            ajax_get(URLs, send, function() {
+                // loading(true);
+            }).always(function() {
+                // loading(false);
+            }).done(function(rt) {
+                try {
+                    var obj = json_decode(rt)
+                } catch (err) {
+                    console.log("parsing error!");
+                }
+
+                switch (obj.code) {
+                    case 100:
+                        popup.alertSuccess(obj.msg, function() {
+                            var zgID = top.$('#ZgWindow .currentWindows').attr('id');
+                            top.ZgWindowFun.zw.CloseWin(zgID);
+                            var gameID = top.$('.gameList select.game_select').val();
+                            var enable = top.$('.gameList select.enable_select').val();
+                            var data = {
+                                "gameID": gameID,
+                                "enable": enable
+                            };
+                            top.groupFun.currentfun.statusSel(data);
+                        });
+                        break;
+                    default:
+                        popup.alertFalid(obj.msg);
+                        break;
+                }
+            });
+        } else {
+            popup.alert(checkresult.data);
+        }
+    }
+    this.defaultInfo = function() { //預設值
+        if (type == "edit") { //修改時    
+            $('input[name="enable"]').filter('[value="' + "{enable}" + '"]').prop('checked', true);
+            $('input[name="notice"]').filter('[value="' + "{notice}" + '"]').prop('checked', true);
+            $('input[name="repeat"]').filter('[value="' + "{repeat}" + '"]').prop('checked', true);
+        }
+    };
+    var init = function() {
+        $this.defaultInfo();
+    }
+    init();
+}
+var _gameList = new gameList();
+</script>
+{/data}

@@ -1,0 +1,198 @@
+{data}
+<div class="pop_funcLvl">
+    <section>
+        <div class="col-md-12">
+            <table class="formStyle tableList">
+                <tbody>
+                    <tr>
+                        <th>階級：</th>
+                        <td>
+                            <select name="lvl_id">
+                                {lvlGroup}
+                                <option value="{id}">{name}</option>
+                                {/lvlGroup}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>主功能：</th>
+                        <td>
+                            <select name="Cupid">
+                                <option value="">請選擇</option>
+                            </select>
+                        </td>
+                        <th>功能細項：</th>
+                        <td>
+                            <select name="Iupid">
+                                <option value="">無</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>狀態：</th>
+                        <td>
+                            <label class="radio-blue">
+                                <input type="radio" name="enable" value="0" checked><span>啟用</span></label>
+                            <label class="radio-blue">
+                                <input type="radio" name="enable" value="1"><span>停用</span></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>新增：</th>
+                        <td>
+                            <label class="radio-blue">
+                                <input type="radio" name="addcol" value="0" checked><span>是</span></label>
+                            <label class="radio-blue">
+                                <input type="radio" name="addcol" value="1"><span>否</span></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>刪除：</th>
+                        <td>
+                            <label class="radio-blue">
+                                <input type="radio" name="delcol" value="0" checked><span>是</span></label>
+                            <label class="radio-blue">
+                                <input type="radio" name="delcol" value="1"><span>否</span></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>修改：</th>
+                        <td>
+                            <label class="radio-blue">
+                                <input type="radio" name="editcol" value="0" checked><span>是</span></label>
+                            <label class="radio-blue">
+                                <input type="radio" name="editcol" value="1"><span>否</span></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>觀看：</th>
+                        <td>
+                            <label class="radio-blue">
+                                <input type="radio" name="look" value="0" checked><span>是</span></label>
+                            <label class="radio-blue">
+                                <input type="radio" name="look" value="1"><span>否</span></label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center m-t-10 btn-gap">
+                <button type="button" onclick="top.ZgWindowFun.zw.CloseWin(top.$('#ZgWindow .currentWindows').attr('id'), true);" class="btns btns-pink">取消</button>
+                <button type="button" class="btns btns-skyBlue" onclick="_funcLvl.sendFn();">送出</button>
+            </div>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+var funcLvl = function() {
+    var funGroup = JSON.parse('{funGroup}');
+    var $this = this;
+    var jq = "funcLvl";
+    var selector = '#' + jq + '_jqGrid';
+
+    var type = "{type}";
+
+    if (type == "info")
+        var URLs = "{burl}main/funclvl/add";
+    else
+        var URLs = "{burl}main/funclvl/save";
+
+    var trigger = function() {
+        $('.pop_funcLvl button.Button_funcLvladd').off('click').on('click', function() {
+            sendFn();
+        });
+
+        $('.pop_funcLvl select[name="Cupid"]').change(function() {
+            var id = $(this).val();
+            $('.pop_funcLvl select[name="Iupid"]').html('<option value="">無</option>');
+            funGroup.find(function(attr, index) {
+                if (attr["up_id"] == id) {
+                    var option = $('<option value="' + attr["id"] + '">' + attr["name"] + '</option>');
+                    $('.pop_funcLvl select[name="Iupid"]').append(option);
+                }
+            });
+        });
+    }
+    this.sendFn = function() {
+		var Cupid = $(".pop_funcLvl [name='Cupid'] :selected").val();
+		var Iupid  = $(".pop_funcLvl [name='Iupid'] :selected").val();
+		var lvl_id  = $(".pop_funcLvl [name='lvl_id'] :selected").val();
+        /*checknull(formname,檢查欄位)**/
+        var checkinp = {};
+        var checkresult = minejs.checknull('.pop_funcLvl', checkinp);
+        /******************************/
+        if(Cupid=="")popup.alert("請選擇主功能");
+        if(Iupid=="")popup.alert("請選擇細項");
+
+        if (checkresult.status == true) {
+            var send = {
+                "id": "{id}",
+                "Cupid": Cupid,
+                "Iupid": Iupid,
+                "lvl_id": lvl_id,
+                "enable": null,
+                "addcol": null,
+                "editcol": null,
+                "delcol": null,
+                "look": null
+            };
+            $.extend(send, checkresult.data);
+
+            ajax_get(URLs, send, function() {
+                // loading(true);
+            }).always(function() {
+                // loading(false);
+            }).done(function(rt) {
+                try {
+                    var obj = json_decode(rt)
+                } catch (err) {
+                    console.log("parsing error!");
+                }
+
+                switch (obj.code) {
+                    case 100:
+                        popup.alertSuccess(obj.msg, function() {
+                            var zgID = top.$('#ZgWindow .currentWindows').attr('id');
+                            top.ZgWindowFun.zw.CloseWin(zgID);
+                            top.groupFun.currentfun.catchData();
+                        });
+
+                        break;
+                    default:
+                        popup.alertFalid(obj.msg);
+                        break;
+                }
+            });
+        } else {
+            popup.alert(checkresult.data);
+        }
+    }
+    this.defaultInfo = function() { //預設值
+        if (type == "edit") { //修改時      
+        console.log("{lvl_id}");    
+            // $('select[name="Cupid"] option').filter('[value="' + "{lvl_id}" + '"]').prop('selected', true);
+            $('.pop_funcLvl select[name="lvl_id"] option').filter('[value="' + "{lvl_id}" + '"]').prop('selected', true);
+
+            $('.pop_funcLvl input[name="enable"]').filter('[value="' + "{enable}" + '"]').prop('checked', true);
+            $('.pop_funcLvl input[name="addcol"]').filter('[value="' + "{addcol}" + '"]').prop('checked', true);
+            $('.pop_funcLvl input[name="editcol"]').filter('[value="' + "{editcol}" + '"]').prop('checked', true);
+            $('.pop_funcLvl input[name="delcol"]').filter('[value="' + "{delcol}" + '"]').prop('checked', true);
+            $('.pop_funcLvl input[name="look"]').filter('[value="' + "{look}" + '"]').prop('checked', true);
+        }
+
+        funGroup.find(function(attr, index) {
+            if (attr["up_id"] === "0") {
+                var option = $('<option value="' + attr["id"] + '">' + attr["name"] + '</option>');
+                $('.pop_funcLvl select[name="Cupid"]').append(option);
+            }
+        });
+    };
+    var init = function() {
+        $this.defaultInfo();
+        trigger();
+    }
+    init();
+
+}
+var _funcLvl = new funcLvl();
+</script>
+{/data}

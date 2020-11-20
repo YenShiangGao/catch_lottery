@@ -1,0 +1,142 @@
+<div class="gameOpenset">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">遊戲
+                    <select class="name_sel">
+                        <option value="">全部</option>
+                        {nameSel}
+                        <option value="{game_id}}">{cname}</option>
+                        {/nameSel}
+                    </select>
+                </li>
+                <li class="cls_site">年份
+                    <select class="year_sel">
+                        <option value="">全部</option>
+                        {yearSel}
+                        <option value="{lottery_year}">{lottery_year}</option>
+                        {/yearSel}
+                    </select>
+                </li>
+                <li class="cls_site">狀態
+                    <select class="enable_select">
+                        <option value="">全部</option>
+                        <option value="0">啟用</option>
+                        <option value="1">停用</option>
+                    </select>
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+        <div class="btns-group">
+            <button type="button" class="btns btns-blue btns-square gameOpenset_Button_add">
+                <i class="icon-circle-plus"></i><span>新增</span>
+            </button>
+        </div>
+    </div>
+    <div class="gameOpenset_div_grid">
+        <table id="gameOpenset_jqGrid" style="width: 100%;"></table>
+        <div id="gameOpenset_pagered"></div>
+    </div>
+</div>
+<script>
+var gameOpenset = function() {
+    var $this = this;
+    var jq = "gameOpenset";
+    var selector = '#' + jq + '_jqGrid';
+    var thisTab = $('section.active ' + selector);
+    
+    this.trigger = function() {
+        $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+            var enable = $('.gameOpenset select.enable_select').val();
+            var year = $('.gameOpenset select.year_sel').val();
+            var gameID = $('.gameOpenset select.name_sel').val();
+            
+            var data = {
+                "enable": enable,
+                "year":year,
+                "gameID":gameID
+            };
+
+            $this.statusSel(data);
+        });
+
+        $('.' + jq + '_Button_add').off('click').on('click', function() {
+            ZgWindowFun.GoPage('main/pop/gameOpenset/info', 'iframeSimple', {
+                width: 500,
+                height: 450
+            }, '新增');
+        });
+    }
+    this.catchData = function() {
+        var URLs = "{burl}main/gameOpenset/list";
+        var data = {};
+        minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+    }
+    this.statusSel = function(data) {
+        var URLs = "{burl}main/gameOpenset/list";
+        var send = {
+            "enable": "",
+            "year": "",
+            "gameID":""
+        };
+        $.extend(send, data);
+        minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+    }
+    var initGrid = function() {
+        var colNames = ['編號', '遊戲名稱', '年', '月', '日', '狀態', '操作選項'],
+            colModel = [{
+                name: 'id',
+                key: true,
+                hidden: true
+            }, {
+                name: 'game_id',
+                align: 'center'
+            }, {
+                name: 'lottery_year',
+                align: 'center'
+            }, {
+                name: 'lottery_month',
+                align: 'center'
+            }, {
+                name: 'lottery_day'
+            }, {
+                name: 'enable',
+                align: 'center'
+            }, {
+                name: 'act',
+                index: 'act',
+                align: 'center'
+            }];
+
+            opt = {
+                'rowNum':10,
+                'pager': '#gameOpenset_pagered',
+                'footerrow':true,
+                'sortname':'lottery_year',
+                'sortorder':'desc',
+                gridComplete: function() {
+                    //當grid產出後，判斷是否會出現卷軸，若沒有卷軸則加上class="hideScroll"，隱藏原本jqgride會預留的卷軸空間
+                    thisTab.find('.ui-jqgrid-bdiv > div').innerHeight() <= $('.ui-jqgrid-bdiv').innerHeight() ? $('.ui-jqgrid').addClass('hideScroll') : $('.ui-jqgrid').removeClass('hideScroll');
+
+                },
+            }
+            jgrid.create(selector, jq, colNames, colModel, null, opt);
+    }
+    var init = function() {
+        initGrid();
+        $this.catchData();
+        /*daterangepicker*/
+        $('#daterange').daterangepicker();
+    }
+    init();
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new gameOpenset();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

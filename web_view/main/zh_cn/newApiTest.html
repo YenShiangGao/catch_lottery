@@ -1,0 +1,130 @@
+<div class="gameHistory">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">遊戲選擇
+                    <select class="game_select">
+                        {gameGroup}
+                        <option value="{id}">[{id}]{name}</option>
+                        {/gameGroup}
+                    </select>
+                </li>
+                <li class="cls_site">期數
+                    <input type="input" class="period">
+                </li>
+                <li class="cls_site">開獎日期
+                    <input type="date" class="date">
+                </li>
+                <li class="cls_site">比對結果
+                	<select class="status">
+                		<option value="true">正確</option>
+                		<option value="false">錯誤</option>
+                	</select>
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="gameHistory_div_grid">
+        <table id="gameHistory_jqGrid" style="width: 100%;"></table>
+    </div>
+    <!-- <div id="gameHistory_pagered"></div> -->
+</div>
+<script>
+var gameHistory = function() {
+        var $this = this;
+        var jq = "gameHistory";
+        var selector = '#' + jq + '_jqGrid';
+
+        this.trigger = function() {
+            $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+                var gameID = $('select.game_select').val();
+                var date = $('input.date').val();
+                var period = $('input.period').val();
+                var state = $('select.status').val();
+                var data = {
+                    "gameID": gameID,
+                    "date": date,
+                    "period": period,
+                    "state": state,
+                };
+
+                $this.statusSel(data);
+            });
+
+        }
+        this.catchData = function() {
+            var URLs = "{burl}main/gameHistory/testList";
+            var data = {};
+            minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+        }
+        this.statusSel = function(data) {
+            var URLs = "{burl}main/gameHistory/testList";
+            var send = {
+                "gameID": "",
+                "date": "",
+                "period": ""
+            };
+            $.extend(send, data);
+            minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+        }
+
+        var initGrid = function() {
+            var colNames = ['編號', '遊戲名稱', '期數編碼', '開獎號碼', '開獎時間', '來源Url', '號碼比對'],
+                colModel = [{
+                    name: 'id',
+                    key: true,
+                    hidden: true
+                }, {
+                    name: 'game_id',
+                    align: 'center',
+                    width: 70
+                }, {
+                    name: 'period_str',
+                    align: 'center',
+                    width: 70
+                }, {
+                    name: 'lottery',
+                    align: 'center',
+                    width: 80
+                }, {
+                    name: 'lottery_time',
+                    align: 'center',
+                    width: 80
+                }, {
+                    name: 'url_id',
+                    align: 'center',
+                    width: 80
+                }, {
+                    name: 'codeCom',
+                    align: 'center',
+                    width: 80,
+                    formatter: function(cv, opt, obj) {
+                    if(obj.codeCom=="true")
+                    	return '<i class="fa fa-check" aria-hidden="true" style="color:#36ed85;"></i>';
+                    else
+                    	return '<i class="fa fa-times" aria-hidden="true" style="color:red;"></i>';
+                }
+                }];
+
+            jgrid.create(selector, jq, colNames, colModel);
+        }
+        var init = function() {
+            initGrid();
+            $this.catchData();
+            /*daterangepicker*/
+            $('#daterange').daterangepicker();
+
+            var today = tools.dateChange();
+            $('[type="date"]').val(today);
+        }
+        init();
+    }
+    //170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new gameHistory();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

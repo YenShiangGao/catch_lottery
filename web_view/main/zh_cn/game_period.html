@@ -1,0 +1,103 @@
+<div class="gamePeriod">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">遊戲選擇
+                    <select class="game_select">
+                        {gameGroup}
+                        <option value="{id}">[{id}]{name}</option>
+                        {/gameGroup}
+                    </select>
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="gamePeriod_div_grid">
+        <table id="gamePeriod_jqGrid" style="width: 100%;"></table>
+    </div>
+    <!-- <div id="gamePeriod_pagered"></div> -->
+</div>
+<script>
+var gamePeriod = function() {
+    var $this = this;
+    var jq = "gamePeriod";
+    var selector = '#' + jq + '_jqGrid';
+
+    this.trigger = function() {
+        $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+            var gameID = $('.gamePeriod select.game_select').val();
+            var data = {
+                "gameID": gameID
+            };
+
+            $this.statusSel(data);
+
+        });
+
+        $('.' + jq + '_Button_add').off('click').on('click', function() {
+            ZgWindowFun.GoPage('main/pop/gamePeriod/info', 'iframeSimple', {
+                width: 500,
+                height: 450
+            }, '新增');
+        });
+    }
+    this.catchData = function() {
+        var URLs = "{burl}main/gamePeriod/list";
+        var data = {};
+        minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+    }
+    this.statusSel = function(data) {
+        var URLs = "{burl}main/gamePeriod/list";
+        var send = {
+            "gameID": ""
+        };
+        $.extend(send, data);
+        minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+    }
+    var initGrid = function() {
+        var colNames = ['編號', '遊戲名稱', '遊戲週期', '期數編碼', '期數應開獎時間'],
+            colModel = [{
+                name: 'id',
+                key: true,
+                hidden: true
+            }, {
+                name: 'game_id',
+                align: 'center',
+                width: 70
+            }, {
+                name: 'cycle',
+                align: 'center',
+                width: 50
+            }, {
+                name: 'Periods',
+                align: 'center',
+                width: 50
+            }, {
+                name: 'PeriodsTime',
+                align: 'center',
+                width: 70
+            }];
+
+        jgrid.create(selector, jq, colNames, colModel);
+    }
+    var init = function() {
+        initGrid();
+        $this.catchData();
+        /*daterangepicker*/
+        $('#daterange').daterangepicker();
+
+        var today = tools.dateChange();
+        $('[type="date"]').val(today);
+    }
+    init();
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new gamePeriod();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

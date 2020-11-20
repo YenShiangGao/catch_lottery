@@ -1,0 +1,147 @@
+{data}
+<div class="pop_highweightlist">
+    <section>
+        <div class="col-md-12">
+            <table class="formStyle tableList">
+                <tr>
+                    <th>{lang_game_gamename}：</th>
+                    <td>{name}</td>
+                </tr>
+                <tr>
+                    <th>{lang_game_openperiod}：</th>
+                    <td>{period_str}</td>
+                </tr>
+                <tr>
+                    <th>{lang_game_lot_date}：</th>
+                    <td>{period_date}</td>
+                </tr>
+                <tr>
+                    <th>{lang_bet_lot}：</th>
+                    <td class="lottery">
+                         <input type="text" name="lottery" value="">
+                    </td>
+                </tr>
+            </table>
+            <div class="text-center m-t-10 btn-gap" style="margin: 16px;">
+                    <button type="button" onclick="top.ZgWindowFun.zw.CloseWin(top.$('#ZgWindow .currentWindows').attr('id'), true);" class="btns btns-pink">取消</button>
+                    <button type="button" class="btns btns-skyBlue" onclick="_manual.maunalSave();">送出</button>
+                </div>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+function manualOpenFn() {
+    var $this = this;
+    var game_id = "{game_id}";
+    var city = "{city}";
+    
+    $this.maunalSave = function() {
+        /*checknull(formname,檢查欄位)**/
+        var checkresult = minejs.checknull('.pop_highweightlist');
+        let lottery = {}
+        for (let k in checkresult.data) {
+            if (k.split('_')[1] == undefined) {
+                lottery = checkresult.data[k]
+            } else {
+                if (lottery[k.split('_')[1]] == undefined)
+                    lottery[k.split('_')[1]] = {};
+
+                lottery[k.split('_')[1]][k.split('_')[2]] = checkresult.data[k];
+            }
+            if (checkresult.data[k] == '') {
+                checkresult.status = false;
+                checkresult.data = '開獎號碼不得為空'
+            }
+        }
+        /******************************/
+        lottery = typeof(lottery) == 'string' ? lottery : JSON.stringify(lottery)
+        if (checkresult.status == true) {
+            var send = {
+                'period_date': '{period_date}',
+                'period_str': '{period_str}',
+                'tableId': '{id}',
+                'lottery': lottery,
+                'type': 'save',
+            };
+            var URLs = '{burl}main/Highweightlist/edit';
+            ajax_get(URLs, send)
+                .done(function(rt) {
+                    var fun = {}
+                    fun["100"] = function(obj) {
+                        popup.alertSuccess(obj.msg, function() {
+                            var zgID = top.$('#ZgWindow .currentWindows').attr('id');
+                            top.ZgWindowFun.zw.CloseWin(zgID);
+                            top.groupFun.currentfun.catchData();
+                        });
+                    }
+                    my_decode(rt, fun);
+                });
+        } else {
+            popup.alert(checkresult.data);
+        }
+    }
+    var init = function() {
+        if (game_id == 110 || game_id == 155) {
+            if (game_id == 110) {
+                var str_ary = [
+                    '{lang_game_vdn_lot_item_0}',
+                    '{lang_game_vdn_lot_item_1}',
+                    '{lang_game_vdn_lot_item_2}',
+                    '{lang_game_vdn_lot_item_3}',
+                    '{lang_game_vdn_lot_item_4}',
+                    '{lang_game_vdn_lot_item_5}',
+                    '{lang_game_vdn_lot_item_6}',
+                    '{lang_game_vdn_lot_item_7}',
+                    '{lang_game_vdn_lot_item_8}'
+                ];
+                if (city != 'BAC')
+                    var lottery = JSON.parse('{"8":["62"],"7":["455"],"6":["1601","7957","4205"],"5":["4086"],"4":["32511","01994","45294","41928","31104","30250","25367"],"3":["27317","76961"],"2":["09195"],"1":["26269"],"0":["266549"]}');
+                else 
+                    var lottery = JSON.parse('{"7":["455","455","455","455"],"6":["1601","7957","4205"],"5":["4086","4086","4086","4086","4086","4086"],"4":["32511","01994","45294","41928"],"3":["27317","76961","27317","76961","27317","76961"],"2":["09195","09195"],"1":["26269"],"0":["266549"]}');
+           }
+            if (game_id == 155) {
+                var str_ary = [
+                    '第一奖',
+                    '第二奖',
+                    '第三奖',
+                    '入围奖',
+                    '安慰奖'
+                ];
+                var lottery = JSON.parse('{"4":["32511","01994","45294","41928","31104","30250","25367","31104","30250","25367"],"3":["32511","01994","45294","41928","31104","30250","25367","31104","30250","25367"],"2":["09195"],"1":["26269"],"0":["266549"]}');
+            }
+            let form = $('<form id="formPost" name="formPost" method="POST"></form>');
+            let table = $('<table style="align: center;"></table>');
+            for (let key in lottery) {
+                let len = (lottery[key]).length;
+                if (len <= 3) {
+                    let c1 = lottery[key][0] == undefined ? '' : '<input type="text" name="lottery' + '_' + key + '_' + 0 + '" style="width: 70px;" value="">';
+                    let c2 = lottery[key][1] == undefined ? '' : '<input type="text" name="lottery' + '_' + key + '_' + 1 + '" style="width: 70px;" value="">';
+                    let c3 = lottery[key][2] == undefined ? '' : '<input type="text" name="lottery' + '_' + key + '_' + 2 + '" style="width: 70px;" value="">';
+                    let code = c1 + c2 + c3;
+                    let tr = $('<tr />');
+                    let td = $('<td style="text-align: center;">' + str_ary[key] + '</td><td style="text-align: left;">' + code + '</td>');
+                    tr.append(td);
+                    table.append(tr);
+                } else {
+                    for (let i = 0; i < Math.ceil(len / 3); i++) {
+                        let c1 = lottery[key][i*3] == undefined ? '' : '<input type="text" name="lottery' +'_' + key +'_'+ (i*3) + '" style="width: 70px;" value="">';
+                        let c2 = lottery[key][i*3+1] == undefined ? '' : '<input type="text" name="lottery' +'_' + key +'_'+ (i*3+1) + '" style="width: 70px;" value="">';
+                        let c3 = lottery[key][i*3+2] == undefined ? '' : '<input type="text" name="lottery' +'_' + key +'_'+ (i*3+2) + '" style="width: 70px;" value="">';
+                        let code = c1 + c2 + c3;
+                        let tr = $('<tr />');
+                        let row = Math.ceil(len / 3);
+                        let td = i==0 ? $('<td rowspan="' + row + '" style="text-align: center; width: 80px;">' + str_ary[key] + '</td><td style="text-align: left; width: 210px;">' + code + '</td>') : $('<td style="text-align: left; width: 210px;">' + code + '</td>')
+                        tr.append(td);
+                        table.append(tr);
+                    }
+                }
+            }
+            form.append(table);
+            $('td.lottery').html('').append(form.prop('outerHTML'));
+        }
+    }
+    init();
+}
+var _manual = new manualOpenFn();
+</script>
+{/data}

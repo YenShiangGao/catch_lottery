@@ -1,0 +1,185 @@
+<div class="gamePeriods">
+    <div class="filterWrap formStyle">
+        <div class="search-group">
+            <ul>
+                <li class="cls_site">遊戲選擇
+                    <select class="game_select">
+                        {gameGroup}
+                        <option value="{id}">[{id}]{name}</option>
+                        {/gameGroup}
+                    </select>
+                </li>
+                <li class="cls_site">開獎狀態
+                    <select class="status_select">
+                        <option value="">全部</option>
+                        <option value="N">未開獎</option>
+                        <option value="Y">已開獎</option>
+                    </select>
+                </li>
+                <li class="cls_site">開獎日期
+                    <input type="date" class="date_select">
+                </li>
+                <li>
+                    <button type="button" class="btns btns-red Button_search">搜索</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="gamePeriods_div_grid">
+        <table id="gamePeriods_jqGrid"></table>
+        <div id="gamePeriods_pagered"></div>
+    </div>
+</div>
+<script>
+var gamePeriodsFu = function() {
+    var $this = this;
+    var jq = "gamePeriods";
+    var selector = '#' + jq + '_jqGrid';
+    var thisTab = $('section.active ' + selector);
+
+    this.trigger = function() {
+        $('.' + jq + ' ul li .Button_search').off('click').on('click', function() {
+            var gameID = $('.gamePeriods select.game_select').val();
+            var status = $('.gamePeriods select.status_select').val();
+            var date = $('.gamePeriods input.date_select').val();
+            var data = {
+                "gameID": gameID,
+                "status": status,
+                "date": date,
+            };
+
+            $this.statusSel(data);
+        })
+    }
+    this.catchData = function() {
+        var URLs = "{burl}main/Highweightlist/list";
+        var data = {};
+        minejs.catchData(URLs, data, selector, jq, {}, $this.trigger);
+    }
+    this.statusSel = function(data) {
+        var URLs = "{burl}gloco/statusSel/hightCode";
+        var send = {
+            "gameID": "",
+            "status": "",
+            "date": "",
+        };
+        $.extend(send, data);
+        minejs.catchData(URLs, send, selector, jq, {}, $this.trigger);
+    }
+    var initGrid = function() {
+        var colNames = ['編號', '遊戲ID', '遊戲名稱', '開獎號碼', '開獎日期', '開獎期數', '實際開獎時間', '預計開獎時間', '開獎狀態'],
+            colModel = [{
+                name: 'id',
+                align: 'center'
+            }, {
+                name: 'game_id',
+                align: 'center',
+                hidden: true
+            }, {
+                name: 'name',
+                align: 'center'
+            }, {
+                name: 'lottery',
+                align: 'center',
+                width:175,
+                formatter: function(cv, opt, obj) {
+                    if (obj.ename == 'hn' || obj.ename == 'sg4d') {
+                        switch (obj.ename) {
+                            case 'hn':
+                                var str_ary = [
+                                    '{lang_game_vdn_lot_item_0}',
+                                    '{lang_game_vdn_lot_item_1}',
+                                    '{lang_game_vdn_lot_item_2}',
+                                    '{lang_game_vdn_lot_item_3}',
+                                    '{lang_game_vdn_lot_item_4}',
+                                    '{lang_game_vdn_lot_item_5}',
+                                    '{lang_game_vdn_lot_item_6}',
+                                    '{lang_game_vdn_lot_item_7}',
+                                    '{lang_game_vdn_lot_item_8}'
+                                ];
+                                break;
+                            case 'sg4d':
+                                var str_ary = ['第一奖','第二奖','第三奖','入围奖','安慰奖'];
+                                break;
+                        }
+                        if (obj.lottery != '') {
+                            var lottery = JSON.parse(obj.lottery);
+                            let table = $('<table style="align: center;"></table>');
+                            for (let key in lottery) {
+                                let len = (lottery[key]).length;
+                                if (len <= 3) {
+                                    let tr = $('<tr />');
+                                    let td = $('<td style="text-align: center;">' + str_ary[key] + '</td><td style="text-align: left;">' + lottery[key] + '</td>');
+                                    tr.append(td);
+                                    table.append(tr);
+                                } else {
+                                    for (let i = 0; i < Math.ceil(len / 3); i++) {
+                                        let c1 = lottery[key][i*3] == undefined ? '' : lottery[key][i*3];
+                                        let c2 = lottery[key][i*3+1] == undefined ? '' : ',' + lottery[key][i*3+1];
+                                        let c3 = lottery[key][i*3+2] == undefined ? '' : ',' + lottery[key][i*3+2];
+                                        let code = c1 + c2 + c3;
+                                        let tr = $('<tr />');
+                                        let row = Math.ceil(len / 3);
+                                        let td = i==0 ? $('<td rowspan="' + row + '" style="text-align: center; width: 80px;">' + str_ary[key] + '</td><td style="text-align: left; width: 150px;">' + code + '</td>') : $('<td style="text-align: left; width: 150px;">' + code + '</td>')
+                                        tr.append(td);
+                                        table.append(tr);
+                                    }
+                                }
+                            }
+                            return table.prop('outerHTML');
+                        } else {
+                            return '';
+                        }
+                    } else {
+                        return obj.lottery;
+                    }
+                }
+            }, {
+                name: 'period_date',
+                align: 'center'
+            }, {
+                name: 'period_str',
+                align: 'center'
+            }, {
+                name: 'lottery_time',
+                align: 'center'
+            }, {
+                name: 'be_lottery_time',
+                align: 'center'
+            }, {
+                name: 'lottery_status',
+                align: 'center'
+            }];
+
+            opt = {
+                'rowNum':10,
+                'pager': '#gamePeriods_pagered',
+                'footerrow':true,
+                'sortname':'period_str',
+                'sortorder':'desc',
+                gridComplete: function() {
+                    //當grid產出後，判斷是否會出現卷軸，若沒有卷軸則加上class="hideScroll"，隱藏原本jqgride會預留的卷軸空間
+                    thisTab.find('.ui-jqgrid-bdiv > div').innerHeight() <= $('.ui-jqgrid-bdiv').innerHeight() ? $('.ui-jqgrid').addClass('hideScroll') : $('.ui-jqgrid').removeClass('hideScroll');
+
+                },
+            }
+            jgrid.create(selector, jq, colNames, colModel, null, opt);
+    }
+    var init = function() {
+        initGrid();
+        $this.catchData();
+
+        $('#daterange').daterangepicker();
+
+        var today = tools.dateChange();
+        $('[type="date"]').val(today);
+    }
+    init();
+}
+
+//170919 - 在此頁呼叫的function直接new出來存在gFun()中
+groupFun.pagefunc[currentUnit] = new gamePeriodsFu();
+
+//170919 - 將當前的變數指定到gFun.func[currentUnit]中
+groupFun.currentfun = groupFun.pagefunc[currentUnit];
+</script>

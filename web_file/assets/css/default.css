@@ -1,0 +1,133 @@
+.tempHtml {display: none; !important}
+.m-t-5 {margin-top: 5px}
+.m-t-10 {margin-top: 10px}
+.p-t-5 {padding-top: 5px}
+.p-t-10 {padding-top: 10px}
+.clearfix{overflow: auto;}
+.btn-gap .btns:nth-child(n+2){margin-left: 10px}
+.top_alert {
+    position: fixed;
+    z-index: 500;
+    display: block;
+    width: 100%;
+    padding: 5px 15px;
+    top: -28px;
+    background: pink;
+    color: crimson;
+}
+.top_alert.active{top: 0;}
+.btns{
+    line-height: 33px;
+}
+.btns-square{
+    line-height: normal;
+}
+.btns-sm{
+    font-size: 0.8rem;
+    min-width: 45px;
+    line-height: 26px;
+}
+[class*="btns-bd-"]{
+    cursor: default;
+}
+.permWrap{
+    margin: 5px 0;
+    background: #b9c3e2;
+    border-radius: 3px;
+}
+.permWrap .btns-sm{
+    margin-bottom: 4px
+}
+.permTitle{
+    line-height: 40px;
+    color: #283c6f;
+    padding: 0 15px;
+}
+.permTitle.move{
+    cursor: move;    
+}
+.permWrap .childWrap{    
+    min-height: 20px;
+    border: 2px dashed #717ca0;
+    padding: 15px;
+    margin: 0px 15px 15px;
+    background: #e2e8fd
+}
+
+.swal2-modal{font-family: Microsoft JhengHei;}
+
+.filterWrap .right-top-text{
+    float: right;
+    line-height: 43px;
+}
+.daterangepicker.dropdown-menu{
+    z-index: 10000;
+}
+.dateRangeBox{
+    margin-bottom: 0;
+}
+.dateRangeBox input{
+    height: 33px;
+}
+
+
+
+/*頁碼*/
+div.pageWrap {
+    overflow: hidden;
+    font-size: 9pt;
+    padding: 3px;
+    margin: 3px;
+    text-align: center;
+}
+div.pageWrap ul {
+    list-style: none;
+    padding: 8px 0;
+    line-height: 16px;
+}
+div.pageWrap li {
+    display: inline;
+    padding: 2px 5px 2px 5px;
+    border: 1px solid #999999;
+    text-decoration: none;
+    color: #999999;
+    cursor:pointer;
+}
+div.pageWrap li:nth-child(n+1){
+    margin-right: 3px;
+}
+div.pageWrap li:hover {
+    border: 1px solid #333;
+    color: #333;
+}
+div.pageWrap a {
+    padding: 2px 5px 2px 5px;
+    margin-right: 5px;
+    text-decoration: none;
+    color: #717171;
+}
+div.pageWrap a:hover, div.pageWrap a:active {
+    padding: 2px 5px 2px 5px;
+    margin-right: 5px;
+    color: #000;
+}
+div.pageWrap li.current {
+    padding: 2px 5px 2px 5px;
+    font-weight: bold;
+    color: #333333;
+}
+div.pageWrap li.disabled {
+    border: 1px solid #d0d0d0;
+    padding: 2px 5px 2px 5px;
+    margin-right: 2px;
+    color: #D6D6D6;
+    cursor: default;
+}
+div.pageWrap .pageCount {
+    display:inline-block;
+    margin:5px 0;
+}
+.WinContent hr {margin: 0;}
+.WinContent .filterWrap{margin-bottom: 0;}
+
+input.dateRangeTime{min-width: 280px}

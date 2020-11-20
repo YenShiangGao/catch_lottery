@@ -1,0 +1,130 @@
+{data}
+<div class="pop_gameVac">
+    <section>
+        <div class="col-md-12">
+            <table class="formStyle tableList">
+                <tbody>
+                    <tr>
+                        <th>遊戲編號：</th>
+                        <td>
+                            <select name="game_id">
+                                {gameGroup}
+                                <option value="{id}">[{id}]{name}</option>
+                                {/gameGroup}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>假期開始：</th>
+                        <td>
+                            <input type="date" name="vacStart" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>假期結束：</th>
+                        <td>
+                            <input type="date" name="vacEnd" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>狀態：</th>
+                        <td>
+                            <label class="radio-blue">
+                                <input type="radio" name="enable" value="0" checked><span>啟用</span></label>
+                            <label class="radio-blue">
+                                <input type="radio" name="enable" value="1"><span>停用</span></label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center m-t-10 btn-gap">
+                <button type="button" class="btns btns-red Button_gameVacadd" value="">新增</button>
+            </div>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+var type = "{type}";
+if (type == "info")
+    var URLs = "{burl}main/gameVac/add";
+else
+    var URLs = "{burl}main/gameVac/save";
+
+var gameVac = function() {
+    var sendFn = function() {
+        var sel_game_id = $(".pop_gameVac [name='game_id'] :selected").val();
+
+        /*checknull(formname,檢查欄位)**/
+        var checkinp = {};
+        var checkresult = minejs.checknull('.pop_gameVac', checkinp);
+
+        if (checkresult.status == true) {
+            /**將結束時間 與 開始時間 相減，不可以讓結束時間<開始時間**/
+            var send = {
+                "id": "{id}",
+                "game_id": sel_game_id,
+                "vacStart": 'n/a',
+                "vacEnd": 'n/a',
+                "enable": 0
+            };
+            $.extend(send, checkresult.data);
+
+            var timeCount = new Date(send.vacEnd).getTime() - new Date(send.vacStart).getTime();
+            if (timeCount > 0) {
+                ajax_get(URLs, send, function() {
+                    // loading(true);
+                }).always(function() {
+                    // loading(false);
+                }).done(function(rt) {
+                    try {
+                        var obj = json_decode(rt)
+                    } catch (err) {
+                        console.log("parsing error!");
+                    }
+
+                    switch (obj.code) {
+                        case 100:
+                            popup.alertSuccess(obj.msg, function() {
+                                var zgID = top.$('#ZgWindow .currentWindows').attr('id');
+                                top.ZgWindowFun.zw.CloseWin(zgID);
+                                top.groupFun.currentfun.catchData();
+                            });
+                            break;
+                        default:
+                            popup.alertFalid(obj.msg);
+                            break;
+                    }
+                });
+            } else {
+                popup.alert("時間選擇有誤");
+            }
+        } else {
+            popup.alert(checkresult.data);
+        }
+    }
+    var trigger = function() {
+        $('.pop_gameVac button.Button_gameVacadd').off('click').on('click', function() {
+            sendFn();
+        });
+
+        // select edit mode init
+        $('input[name="enable"]').filter('[value="' + "{enable}" + '"]').prop('checked', true);
+        $('select[name="game_id"] option').filter('[value="' + "{game_id}" + '"]').prop("selected", true);
+
+        if ("{vacStart}" == '' && "{vacEnd}" == '') {
+            var today = tools.dateChange();
+            $('[type="date"]').val(today);
+        } else {
+            var vacStart = tools.dateChange(new Date("{vacStart}"));
+            $('.pop_gameVac [type="date"][name="vacStart"]').val(vacStart);
+
+            var vacEnd = tools.dateChange(new Date("{vacEnd}"));
+            $('.pop_gameVac [type="date"][name="vacEnd"]').val(vacEnd);
+        }
+    }
+
+    trigger();
+}
+var _gameVac = new gameVac();
+</script>
+{/data}

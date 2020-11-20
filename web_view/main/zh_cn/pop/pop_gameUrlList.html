@@ -1,0 +1,194 @@
+{data}
+<div class="pop_gameUrlList">
+    <section>
+        <div class="col-md-12">
+            <table class="formStyle tableList">
+                <tbody>
+                    <tr>
+                        <th>遊戲編號：</th>
+                        <td>
+                            <select name="game_id">
+                                {gameGroup}
+                                <option value="{id}">[{id}]{name}</option>
+                                {/gameGroup}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>狀　　態：</th>
+                        <td>
+                            <label class="radio-blue">
+                                <input type="radio" name="enable" value="0" checked><span>啟用</span></label>
+                            <label class="radio-blue">
+                                <input type="radio" name="enable" value="1"><span>停用</span></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Proxy：</th>
+                        <td>
+                            <label class="radio-blue">
+                                <input type="radio" name="proxy_enable" value="0" checked><span>啟用</span></label>
+                            <label class="radio-blue">
+                                <input type="radio" name="proxy_enable" value="1"><span>停用</span></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>權　　重：</th>
+                        <td>
+                            <label class="radio-blue">
+                                <input type="radio" name="code_order" value="0"><span>高權重</span></label>
+                            <label class="radio-blue">
+                                <input type="radio" name="code_order" value="1" checked><span>低權重</span></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>名　　稱：</th>
+                        <td>
+                            <input type="text" name="url_name" value="{url_name}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>api：</th>
+                        <td>
+                            <input type="text" name="api_name" value="{api_name}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>網　　址：</th>
+                        <td>
+                            <input type="text" name="url" value="{url}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>最後更新期數：</th>
+                        <td>
+                            <input type="text" name="last_period" value="{last_period}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>最後更新狀態：</th>
+                        <td>
+                            <input type="text" name="last_status" value="{last_status}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>最後更新日期：</th>
+                        <td>
+                            <input type="text" name="last_time" value="{last_time}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>資料收集時間：</th>
+                        <td>
+                            <input type="text" name="last_cost" value="{last_cost}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>最後更新之proxy：</th>
+                        <td>
+                            <input type="text" name="last_proxy" value="{last_proxy}">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center m-t-10 btn-gap">
+                <button type="button" onclick="top.ZgWindowFun.zw.CloseWin(top.$('#ZgWindow .currentWindows').attr('id'), true);" class="btns btns-pink">取消</button>
+                <button type="button" class="btns btns-skyBlue" onclick="_gameUrlList.sendFn();">送出</button>
+            </div>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+var gameUrlList = function() {
+    var $this = this;
+    var type = "{type}";
+
+    if (type == "info")
+        var URLs = "{burl}main/gameurl/add";
+    else
+        var URLs = "{burl}main/gameurl/save";
+
+    this.sendFn = function() {
+        var sel_game_id = $(".pop_gameUrlList [name='game_id'] :selected").val();
+        /*checknull(formname,檢查欄位)**/
+        var checkinp = {
+            "url_name": "請輸入名稱",
+            "api_name": "請輸入api",
+            "url": "請輸入網址"
+        };
+        var checkresult = minejs.checknull('.pop_gameUrlList', checkinp);
+        /******************************/
+
+        if (checkresult.status == true) {
+            var send = {
+                "id": "{id}",
+                "game_id": sel_game_id,
+                "enable": 0,
+                "proxy_enable":0,
+                "code_order": 1,
+                "url_name": 'n/a',
+                "api_name": 'n/a',
+                "url": 'n/a',
+                "last_period": 'n/a',
+                "last_status": 'n/a',
+                "last_time": 'n/a',
+                "last_cost": 'n/a',
+                "last_proxy": 'n/a'
+            };
+            $.extend(send, checkresult.data);
+            ajax_get(URLs, send, function() {
+                // loading(true);
+            }).always(function() {
+                // loading(false);
+            }).done(function(rt) {
+                try {
+                    var obj = json_decode(rt)
+                } catch (err) {
+                    console.log("parsing error!");
+                }
+
+                switch (obj.code) {
+                    case 100:
+                        popup.alertSuccess(obj.msg, function() {
+                            var zgID = top.$('#ZgWindow .currentWindows').attr('id');
+                            top.ZgWindowFun.zw.CloseWin(zgID);
+                            var gameID = top.$('.gameUrl select.game_select').val();
+                            var enable = top.$('.gameUrl select.enable_select').val();
+                            var data = {
+                                "gameID": gameID,
+                                "enable": enable
+                            };
+                            top.groupFun.currentfun.statusSel(data);
+                        });
+                        break;
+                    default:
+                        popup.alertFalid(obj.msg);
+                        break;
+                }
+            });
+        } else {
+            popup.alert(checkresult.data);
+        }
+    }
+    this.defaultInfo = function() { //預設值
+        if (type == "edit") { //修改時
+            $('input[name="enable"]').filter('[value="' + "{enable}" + '"]').prop('checked', true);
+            $('input[name="proxy_enable"]').filter('[value="' + "{proxy_enable}" + '"]').prop('checked', true);
+            $('input[name="code_order"]').filter('[value="' + "{code_order}" + '"]').prop('checked', true);
+            $('select[name="game_id"] option').filter('[value="' + "{game_id}" + '"]').prop('selected', true);
+        }else{
+        	$('input[name="last_period"]').parents('tr').hide();
+        	$('input[name="last_status"]').parents('tr').hide();
+        	$('input[name="last_time"]').parents('tr').hide();
+        	$('input[name="last_cost"]').parents('tr').hide();
+        	$('input[name="last_proxy"]').parents('tr').hide();
+        }
+    };
+    var init = function() {
+        $this.defaultInfo();
+    }
+    init();
+}
+var _gameUrlList = new gameUrlList();
+</script>
+{/data}

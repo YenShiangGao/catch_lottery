@@ -1,0 +1,97 @@
+{data}
+<div class="pop_userLvl">
+    <section>
+        <div class="col-md-12">
+            <table class="formStyle tableList">
+                <tbody>
+                    <tr>
+                        <th>名稱：</th>
+                        <td>
+                            <input type="text" name="lvl_name" value="{lvl_name}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>狀態：</th>
+                        <td>
+                            <label class="radio-blue">
+                                <input type="radio" name="status" value="0" checked><span>啟用</span></label>
+                            <label class="radio-blue">
+                                <input type="radio" name="status" value="1"><span>停用</span></label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center m-t-10 btn-gap">
+                <button type="button" onclick="top.ZgWindowFun.zw.CloseWin(top.$('#ZgWindow .currentWindows').attr('id'), true);" class="btns btns-pink">取消</button>
+                <button type="button" class="btns btns-skyBlue" onclick="_userLvl.sendFn();">送出</button>
+            </div>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+var userLvl = function() {
+	var $this = this;
+    var type = "{type}";
+
+    if (type == "info")
+        var URLs = "{burl}main/userlvl/add";
+    else
+        var URLs = "{burl}main/userlvl/save";
+
+    this.sendFn = function() {
+        /*checknull(formname,檢查欄位)**/
+        var checkinp = {
+            "lvl_name": "請輸入階級名"
+        };
+        var checkresult = minejs.checknull('.pop_userLvl', checkinp);
+        /******************************/
+
+        if (checkresult.status == true) {
+            var send = {
+                "id": "{id}",
+                "lvl_name": null,
+                "status": 0
+            };
+            $.extend(send, checkresult.data);
+
+            ajax_get(URLs, send, function() {
+                // loading(true);
+            }).always(function() {
+                // loading(false);
+            }).done(function(rt) {
+                try {
+                    var obj = json_decode(rt)
+                } catch (err) {
+                    console.log("parsing error!");
+                }
+
+                switch (obj.code) {
+                    case 100:
+                        popup.alertSuccess(obj.msg, function() {
+                            var zgID = top.$('#ZgWindow .currentWindows').attr('id');
+                            top.ZgWindowFun.zw.CloseWin(zgID);
+                            top.groupFun.currentfun.catchData();
+                        });
+                        break;
+                    default:
+                        popup.alertFalid(obj.msg);
+                        break;
+                }
+            });
+        } else {
+            popup.alert(checkresult.data);
+        }
+    }
+    this.defaultInfo = function() { //預設值
+        if (type == "edit") { //修改時     
+        	$('input[name="status"]').filter('[value="' + "{status}" + '"]').prop('checked', true);  
+        }
+    };
+    var init = function() {
+        $this.defaultInfo();
+    }
+    init();
+}
+var _userLvl = new userLvl();
+</script>
+{/data}

@@ -1,0 +1,3 @@
+<?php
+define('UUID', 'game-catch');
+define('TESTMODE', 1);
